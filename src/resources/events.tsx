@@ -1,6 +1,39 @@
 import React from 'react';
 import { Accept } from 'react-dropzone';
-import { List, Datagrid, TextField, EditButton, DeleteButton, Create, SimpleForm, TextInput, Edit, NumberField, BooleanField, ArrayField, FileField, FileInput, ImageField, SelectInput, DateTimeInput, NumberInput, BooleanInput, ImageInput, ArrayInput, SimpleFormIterator } from 'react-admin';
+import { 
+  SaveButton, 
+  Toolbar, 
+  useRedirect, 
+  useNotify, 
+  useDataProvider 
+} from "react-admin";
+import { Button } from '@mui/material';
+import { useFormContext } from 'react-hook-form';
+import DraftsIcon from "@mui/icons-material/Drafts";
+import { 
+  List, 
+  Datagrid, 
+  TextField, 
+  EditButton, 
+  DeleteButton, 
+  Create, 
+  SimpleForm, 
+  TextInput, 
+  Edit, 
+  NumberField, 
+  BooleanField, 
+  ArrayField, 
+  FileField, 
+  FileInput, 
+  ImageField, 
+  SelectInput, 
+  DateTimeInput, 
+  NumberInput, 
+  BooleanInput, 
+  ImageInput, 
+  ArrayInput, 
+  SimpleFormIterator 
+} from 'react-admin';
 
 export const EventList: React.FC = () => (
   <List>
@@ -35,10 +68,39 @@ const acceptFormats: Accept = {
   'image/*': [],
 };
 
+const CustomToolbar = () => {
+  const { setValue, handleSubmit } = useFormContext();
+  const redirect = useRedirect();
+  const notify = useNotify();
+  const dataProvider = useDataProvider();
 
+  const handleSave = async (status: 'PUBLISHED' | 'DRAFT') => {
+    setValue('status', status);
+    await handleSubmit(async (data) => {
+      try {
+        await dataProvider.create('events', { data });
+        notify(`Événement ${status === 'DRAFT' ? 'enregistré en brouillon' : 'publié'} avec succès`, { type: 'success' });
+        redirect('list', 'events');
+      } catch (error) {
+        notify("Erreur lors de l'enregistrement", { type: 'error' });
+      }
+    })();
+  };
+
+  return (
+    <Toolbar>
+      <SaveButton label="Save" onClick={() => handleSave('PUBLISHED')} />
+      <Button onClick={() => handleSave('DRAFT')} variant="contained" startIcon={<DraftsIcon />}>
+        Draft
+      </Button>
+    </Toolbar>
+  );
+};
+
+// 🔹 Formulaire de création avec gestion des brouillons
 export const EventCreate = () => (
   <Create>
-    <SimpleForm>
+    <SimpleForm toolbar={<CustomToolbar />}>
       <TextInput source="title" label="Titre" required />
       <TextInput source="description" label="Description" multiline />
       <SelectInput
@@ -55,6 +117,42 @@ export const EventCreate = () => (
       <TextInput source="status" defaultValue="PUBLISHED" style={{ display: 'none' }} />
       <TextInput source="organizer" label="Organisateur" />
 
+      <ArrayInput source="tickets" label="Billets">
+        <SimpleFormIterator>
+          <TextInput source="name" label="Type" />
+          <NumberInput source="price" label="Prix (€)" />
+          <NumberInput source="quantityAvailable" label="Quantité Disponible" />
+          <NumberInput source="purchaseLimitPerUser" label="Limite Achat" />
+          <BooleanInput source="saleEnabled" label="Vente Active" />
+        </SimpleFormIterator>
+      </ArrayInput>
+
+      <FileInput source="file" label="Image" accept={acceptFormats}>
+        <ImageField source="src" title="title" />
+      </FileInput>
+    </SimpleForm>
+  </Create>
+);
+
+// 🔹 Formulaire d'édition
+export const EventEdit: React.FC = () => (
+  <Edit>
+    <SimpleForm toolbar={<CustomToolbar />}>
+      <TextInput source="title" label="Titre" />
+      <TextInput source="description" label="Description" />
+      <SelectInput
+        source="category"
+        label="Catégorie"
+        choices={[
+          { id: 'CONCERT', name: 'Concert' },
+          { id: 'CONFERENCE', name: 'Conférence' },
+          { id: 'SPORT', name: 'Sport' },
+        ]}
+      />
+      <DateTimeInput source="startDateTime" label="Date et heure de début" />
+      <TextInput source="location" label="Lieu" />
+      <TextInput source="organizer" label="Organisateur" />
+      <TextInput source="status" style={{ display: 'none' }} />
 
       <ArrayInput source="tickets" label="Billets">
         <SimpleFormIterator>
@@ -67,18 +165,8 @@ export const EventCreate = () => (
       </ArrayInput>
 
       <FileInput source="file" label="Image" accept={acceptFormats}>
-        <FileField source="src" title="title" />
+        <ImageField source="src" title="title" />
       </FileInput>
-
-    </SimpleForm>
-  </Create>
-);
-
-export const EventEdit: React.FC = () => (
-  <Edit>
-    <SimpleForm>
-      <TextInput source="title" label="Titre" />
-      <TextInput source="description" label="Description" />
     </SimpleForm>
   </Edit>
 );

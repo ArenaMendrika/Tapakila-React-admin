@@ -12,22 +12,19 @@ const customDataProvider: DataProvider = {
     if (resource === 'events') {
       const formData = new FormData();
   
-      // Fusion des deux déclarations eventData
       const eventData: any = { 
         ...params.data, 
         status: params.data.status || 'PUBLISHED' 
       };
       
-      delete eventData.file; // On enlève le fichier du JSON si existant
+      delete eventData.file;
   
       formData.append('event', new Blob([JSON.stringify(eventData)], { type: 'application/json' }));
   
-      // Ajout du fichier s'il existe
       if (params.data.file && params.data.file.rawFile) {
         formData.append('file', params.data.file.rawFile);
       }
   
-      // Envoi de la requête POST avec multipart/form-data
       const response = await fetch(`${API_URL}/events`, {
         method: 'POST',
         body: formData,
