@@ -35,6 +35,7 @@ const acceptFormats: Accept = {
   'image/*': [],
 };
 
+
 export const EventCreate = () => (
   <Create>
     <SimpleForm>
@@ -51,16 +52,10 @@ export const EventCreate = () => (
       />
       <DateTimeInput source="startDateTime" label="Date et heure de début" />
       <TextInput source="location" label="Lieu" />
+      <TextInput source="status" defaultValue="PUBLISHED" style={{ display: 'none' }} />
       <TextInput source="organizer" label="Organisateur" />
-      <SelectInput
-        source="status"
-        label="Statut"
-        choices={[
-          { id: 'PUBLISHED', name: 'Publié' },
-          { id: 'CANCELED', name: 'Annulé' },
-          { id: 'DRAFT', name: 'Brouillon' },
-        ]}
-      />
+
+
       <ArrayInput source="tickets" label="Billets">
         <SimpleFormIterator>
           <TextInput source="name" label="Type" />
@@ -78,7 +73,6 @@ export const EventCreate = () => (
     </SimpleForm>
   </Create>
 );
-
 
 export const EventEdit: React.FC = () => (
   <Edit>

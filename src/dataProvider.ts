@@ -12,13 +12,17 @@ const customDataProvider: DataProvider = {
     if (resource === 'events') {
       const formData = new FormData();
   
-      // Convert params.data en JSON string et ajouter dans formData
-      const eventData = { ...params.data };
+      // Fusion des deux déclarations eventData
+      const eventData: any = { 
+        ...params.data, 
+        status: params.data.status || 'PUBLISHED' 
+      };
+      
       delete eventData.file; // On enlève le fichier du JSON si existant
   
       formData.append('event', new Blob([JSON.stringify(eventData)], { type: 'application/json' }));
   
-      // Ajout du fichier si il existe
+      // Ajout du fichier s'il existe
       if (params.data.file && params.data.file.rawFile) {
         formData.append('file', params.data.file.rawFile);
       }
@@ -38,7 +42,7 @@ const customDataProvider: DataProvider = {
     }
   
     return baseDataProvider.create(resource, params);
-  },
+  }  
 };
 
 export default customDataProvider;
