@@ -5,7 +5,9 @@ import {
   Toolbar, 
   useRedirect, 
   useNotify, 
-  useDataProvider 
+  useDataProvider, 
+  TopToolbar,
+  CreateButton
 } from "react-admin";
 import { Button } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
@@ -36,7 +38,7 @@ import {
 } from 'react-admin';
 
 export const EventList: React.FC = () => (
-  <List>
+  <List resource="events">
     <Datagrid>
       <TextField source="category" label="Catégorie" />
       <TextField source="title" label="Titre" />
@@ -45,7 +47,7 @@ export const EventList: React.FC = () => (
       <TextField source="location" label="Lieu" />
       <TextField source="organizer" label="Organisateur" />
       <TextField source="status" label="Statut" />
-      
+
       <ArrayField source="tickets" label="Billets">
         <Datagrid>
           <TextField source="name" label="Type" />
@@ -63,6 +65,7 @@ export const EventList: React.FC = () => (
     </Datagrid>
   </List>
 );
+
 
 const acceptFormats: Accept = {
   'image/*': [],
