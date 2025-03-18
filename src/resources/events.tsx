@@ -72,22 +72,44 @@ const acceptFormats: Accept = {
 };
 
 const CustomToolbar = () => {
-  const { setValue, handleSubmit } = useFormContext();
+  const { setValue, getValues, trigger, handleSubmit } = useFormContext();
   const redirect = useRedirect();
   const notify = useNotify();
   const dataProvider = useDataProvider();
 
   const handleSave = async (status: 'PUBLISHED' | 'DRAFT') => {
     setValue('status', status);
-    await handleSubmit(async (data) => {
-      try {
-        await dataProvider.create('events', { data });
-        notify(`Événement ${status === 'DRAFT' ? 'enregistré en brouillon' : 'publié'} avec succès`, { type: 'success' });
-        redirect('list', 'events');
-      } catch (error) {
-        notify("Erreur lors de l'enregistrement", { type: 'error' });
-      }
-    })();
+    const isDraft = status === 'DRAFT';
+  
+    const formData = getValues();
+
+    if (!isDraft) {
+        // Vérification des champs obligatoires UNIQUEMENT si on publie l'événement
+        const requiredFields = ['title', 'description', 'category', 'startDateTime', 'location', 'organizer'];
+        const missingFields = requiredFields.filter(field => !formData[field]);
+    
+        if (missingFields.length > 0) {
+            notify(`Champs obligatoires manquants: ${missingFields.join(', ')}`, { type: 'warning' });
+            return; // Bloque la soumission
+        }
+    
+        if (!formData.tickets || formData.tickets.length === 0) {
+            notify("Ajoutez au moins un billet avant de publier", { type: 'warning' });
+            return; // Bloque la soumission
+        }
+    }
+
+    // Toutes les conditions sont remplies, exécute la soumission
+    handleSubmit(async (data) => {
+        try {
+            await dataProvider.create('events', { data });
+            notify(`Événement ${isDraft ? 'enregistré en brouillon' : 'publié'} avec succès`, { type: 'success' });
+            redirect('list', 'events');
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : "Une erreur inconnue s'est produite";
+          notify(`Erreur lors de l'enregistrement : ${errorMessage}`, { type: 'error' });
+        }        
+    })();  
   };
 
   return (
@@ -100,42 +122,45 @@ const CustomToolbar = () => {
   );
 };
 
-// 🔹 Formulaire de création avec gestion des brouillons
-export const EventCreate = () => (
-  <Create>
-    <SimpleForm toolbar={<CustomToolbar />}>
-      <TextInput source="title" label="Titre" required />
-      <TextInput source="description" label="Description" multiline />
-      <SelectInput
-        source="category"
-        label="Catégorie"
-        choices={[
-          { id: 'CONCERT', name: 'Concert' },
-          { id: 'CONFERENCE', name: 'Conférence' },
-          { id: 'SPORT', name: 'Sport' },
-        ]}
-      />
-      <DateTimeInput source="startDateTime" label="Date et heure de début" />
-      <TextInput source="location" label="Lieu" />
-      <TextInput source="status" defaultValue="PUBLISHED" style={{ display: 'none' }} />
-      <TextInput source="organizer" label="Organisateur" />
+export const EventCreate = () => {
 
-      <ArrayInput source="tickets" label="Billets">
-        <SimpleFormIterator>
-          <TextInput source="name" label="Type" />
-          <NumberInput source="price" label="Prix (€)" />
-          <NumberInput source="quantityAvailable" label="Quantité Disponible" />
-          <NumberInput source="purchaseLimitPerUser" label="Limite Achat" />
-          <BooleanInput source="saleEnabled" label="Vente Active" />
-        </SimpleFormIterator>
-      </ArrayInput>
+  return (
+    <Create>
+      <SimpleForm toolbar={<CustomToolbar />}>
+        <TextInput source="title" label="Titre" />
+        <TextInput source="description" label="Description" multiline />
+        <SelectInput
+          source="category"
+          label="Catégorie"
+          choices={[
+            { id: 'CONCERT', name: 'Concert' },
+            { id: 'CONFERENCE', name: 'Conférence' },
+            { id: 'SPORT', name: 'Sport' }
+          ]}
+          parse={value => (value === "" ? null : value)} 
+        />
+        <DateTimeInput source="startDateTime" label="Date et heure de début" />
+        <TextInput source="location" label="Lieu" />
+        <TextInput source="status" defaultValue="PUBLISHED" style={{ display: 'none' }} />
+        <TextInput source="organizer" label="Organisateur" />
 
-      <FileInput source="file" label="Image" accept={acceptFormats}>
-        <ImageField source="src" title="title" />
-      </FileInput>
-    </SimpleForm>
-  </Create>
-);
+        <ArrayInput source="tickets" label="Billets">
+          <SimpleFormIterator>
+            <TextInput source="name" label="Type" />
+            <NumberInput source="price" label="Prix (€)" />
+            <NumberInput source="quantityAvailable" label="Quantité Disponible" />
+            <NumberInput source="purchaseLimitPerUser" label="Limite Achat" />
+            <BooleanInput source="saleEnabled" label="Vente Active" />
+          </SimpleFormIterator>
+        </ArrayInput>
+
+        <FileInput source="file" label="Image" accept={{ 'image/*': [] }}>
+          <ImageField source="src" title="title" />
+        </FileInput>
+      </SimpleForm>
+    </Create>
+  );
+};
 
 // 🔹 Formulaire d'édition
 export const EventEdit: React.FC = () => (
