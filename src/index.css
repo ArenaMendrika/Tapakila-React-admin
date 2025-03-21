@@ -11,3 +11,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Cache le bouton menu de react-admin */
+.MuiIconButton-root[aria-label="Open drawer"] {
+  display: none !important;
+}
+
+/* Assure que le sidebar reste toujours visible */
+.MuiDrawer-root {
+  display: block !important;
+}

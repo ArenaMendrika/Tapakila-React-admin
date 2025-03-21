@@ -5,7 +5,7 @@ export const UserList: React.FC = () => (
   <List>
     <Datagrid>
       <TextField source="id" />
-      <TextField source="name" label="Nom" />
+      <TextField source="username" label="Nom" />
       <EmailField source="email" label="Email" />
       <TextField source="role" label="Rôle" />
       <EditButton />
@@ -17,7 +17,7 @@ export const UserList: React.FC = () => (
 export const UserEdit: React.FC = () => (
   <Edit>
     <SimpleForm>
-      <TextInput source="name" label="Nom" />
+      <TextInput source="username" label="Nom" />
       <TextInput source="email" label="Email" />
       <SelectInput source="role" label="Rôle" choices={[
         { id: 'admin', name: 'Admin' },

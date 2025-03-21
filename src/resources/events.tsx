@@ -1,5 +1,6 @@
 import React from 'react';
 import { Accept } from 'react-dropzone';
+import { useEffect, useRef } from 'react';
 import { 
   SaveButton, 
   Toolbar, 
@@ -36,36 +37,45 @@ import {
   ArrayInput, 
   SimpleFormIterator 
 } from 'react-admin';
+import { useLocation } from 'react-router-dom';
 
-export const EventList: React.FC = () => (
-  <List resource="events">
-    <Datagrid>
-      <TextField source="category" label="Catégorie" />
-      <TextField source="title" label="Titre" />
-      <TextField source="description" label="Description" />
-      <TextField source="startDateTime" label="Date & Heure" />
-      <TextField source="location" label="Lieu" />
-      <TextField source="organizer" label="Organisateur" />
-      <TextField source="status" label="Statut" />
+export const EventList: React.FC = () => {
+  const location = useLocation();
+  const highlightedEventId = location.state?.highlightedEventId;
 
-      <ArrayField source="tickets" label="Billets">
-        <Datagrid>
-          <TextField source="name" label="Type" />
-          <NumberField source="price" label="Prix (€)" />
-          <NumberField source="quantityAvailable" label="Quantité" />
-          <NumberField source="purchaseLimitPerUser" label="Limite Achat" />
-          <BooleanField source="saleEnabled" label="Vente Active" />
-        </Datagrid>
-      </ArrayField>
+  return (
+    <List resource="events">
+      <Datagrid
+        rowStyle={(record) =>
+          record.id === highlightedEventId ? { border: "2px solid red" } : {}
+        }
+      >
+        <TextField source="category" label="Catégorie" />
+        <TextField source="title" label="Titre" />
+        <TextField source="description" label="Description" />
+        <TextField source="startDateTime" label="Date & Heure" />
+        <TextField source="location" label="Lieu" />
+        <TextField source="organizer" label="Organisateur" />
+        <TextField source="status" label="Statut" />
 
-      <ImageField source="imageUrl" label="Image" />
+        <ArrayField source="tickets" label="Billets">
+          <Datagrid>
+            <TextField source="name" label="Type" />
+            <NumberField source="price" label="Prix (€)" />
+            <NumberField source="quantityAvailable" label="Quantité" />
+            <NumberField source="purchaseLimitPerUser" label="Limite Achat" />
+            <BooleanField source="saleEnabled" label="Vente Active" />
+          </Datagrid>
+        </ArrayField>
 
-      <EditButton />
-      <DeleteButton />
-    </Datagrid>
-  </List>
-);
+        <ImageField source="imageUrl" label="Image" />
 
+        <EditButton />
+        <DeleteButton />
+      </Datagrid>
+    </List>
+  );
+};
 
 const acceptFormats: Accept = {
   'image/*': [],
