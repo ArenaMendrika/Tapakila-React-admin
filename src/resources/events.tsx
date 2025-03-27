@@ -145,7 +145,11 @@ export const EventCreate = () => {
           choices={[
             { id: 'CONCERT', name: 'Concert' },
             { id: 'CONFERENCE', name: 'Conférence' },
-            { id: 'SPORT', name: 'Sport' }
+            { id: 'SPORT', name: 'Sport' },
+            { id: 'WORKSHOP', name: 'Workshop'},
+            { id: 'MEETUP', name: 'Meetup'},
+            { id: 'WEBINAR', name: 'Webinar'},
+            { id: 'FESTIVAL', name: 'Festival'}
           ]}
           parse={value => (value === "" ? null : value)} 
         />

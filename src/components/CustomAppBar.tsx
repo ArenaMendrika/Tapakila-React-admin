@@ -1,120 +1,107 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { AppBar, UserMenu } from 'react-admin';
-import { Toolbar, IconButton, TextField, CircularProgress, List, ListItem, ListItemText, Box, Paper } from '@mui/material';
-import { Search } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { AppBar, Toolbar, TextField, Box, Button, Typography } from '@mui/material';
+import { Notifications, PowerSettingsNew, Search } from '@mui/icons-material';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useLogout } from 'react-admin';
 
-const CustomAppBar = (props: any) => {
+const CustomAppBar = () => {
   const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
   const navigate = useNavigate();
-  const searchRef = useRef<HTMLDivElement>(null);
+  const logout = useLogout();
 
-  useEffect(() => {
-    if (search.length > 2) {
-      setLoading(true);
-      fetch(`http://localhost:8080/search?q=${search}`)
-        .then((response) => response.json())
-        .then((data) => setResults(data))
-        .catch((error) => console.error('Erreur:', error))
-        .finally(() => setLoading(false));
-    } else {
-      setResults([]);
-    }
-  }, [search]);
-
-  // Gestion des clics en dehors de la barre de recherche
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setResults([]);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleSelect = (id: string) => {
-    navigate('/events', { state: { highlightedEventId: id } });
-    setSearch('');
-    setResults([]);
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login'); 
   };
 
   return (
-    <AppBar {...props}>
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-        
-        {/* Espace pour aligner la recherche à droite */}
-        <Box sx={{ flexGrow: 1 }} />
+    <AppBar
+    sx={{
+      top: 0,
+      left: '200px',
+      width: 'calc(100% - 200px)',
+      background: 'linear-gradient(90deg, #E0C3FC, #8EC5FC)',
+      boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+      zIndex: (theme) => theme.zIndex.drawer + 1,
+    }}
+    >
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="Search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          sx={{
+            backgroundColor: 'white',
+            borderRadius: '20px',
+            width: '250px',
+            '& .MuiOutlinedInput-root': { borderRadius: '20px', paddingRight: '8px' },
+          }}
+          InputProps={{
+            endAdornment: (
+              <Search />
+            ),
+          }}
+        />
+<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+<Button
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          color: 'white',
+          '&:hover': {
+            backgroundColor: '#ff4081', 
+            color: 'white', 
+          },
+          padding: '6px 12px',
+          borderRadius: '12px',
+          transition: 'background-color 0.3s ease', 
+        }}
+      >
+        <Typography
+          component="span"
+          sx={{
+            color: 'white',
+          }}
+        >
+          Profile
+        </Typography>
+        <Notifications sx={{ color: 'white' }} />
+      </Button>
+      <span style={{ color: 'white', fontSize: '20px' }}>|</span>
 
-        {/* Barre de recherche (placée à droite) */}
-        <Box ref={searchRef} sx={{ position: 'relative' }}>
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Rechercher..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            sx={{
-              backgroundColor: 'white',
-              borderRadius: '20px',
-              width: '250px',
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '20px',
-                paddingRight: '8px',
-              },
-            }}
-            InputProps={{
-              endAdornment: (
-                <>
-                  {loading ? <CircularProgress color="inherit" size={18} sx={{ marginRight: 1 }} /> : null}
-                  <IconButton size="small">
-                    <Search />
-                  </IconButton>
-                </>
-              ),
-            }}
-          />
-          {results.length > 0 && (
-            <Paper
-              sx={{
-                position: 'absolute',
-                top: '40px',
-                right: 0,
-                width: '250px',
-                backgroundColor: 'white',
-                boxShadow: 3,
-                borderRadius: '10px',
-                zIndex: 10,
-                maxHeight: 250,
-                overflowY: 'auto',
-              }}
-            >
-              <List>
-                {results.map((event) => (
-                  <ListItem
-                    key={event.id}
-                    onClick={() => handleSelect(event.id)}
-                    sx={{
-                      cursor: 'pointer',
-                      '&:hover': { backgroundColor: '#f5f5f5' },
-                      padding: '10px 14px',
-                    }}
-                  >
-                    <ListItemText
-                      primary={event.title}
-                      secondary={event.category}
-                      primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }}
-                      secondaryTypographyProps={{ fontSize: '0.8rem', color: 'gray' }}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </Paper>
-          )}
-        </Box>
+      <Button
+        onClick={handleLogout}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          color: 'white',
+          '&:hover': {
+            backgroundColor: '#ff4081',
+            color: 'white', 
+          },
+          '&:active': {
+            backgroundColor: '#d500f9',
+          },
+          padding: '6px 12px',
+          borderRadius: '12px',
+          transition: 'background-color 0.3s ease', 
+        }}
+      >
+        <Typography
+          component="span"
+          sx={{
+            color: 'white',
+          }}
+        >
+          Logout
+        </Typography>
+        <PowerSettingsNew sx={{ color: 'white' }} />
+      </Button>
+    </Box>
       </Toolbar>
     </AppBar>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Datagrid, TextField, EmailField, EditButton, DeleteButton, Edit, SimpleForm, TextInput, SelectInput } from 'react-admin';
+import { List, Datagrid, TextField, EmailField, EditButton, DeleteButton, Edit, SimpleForm, TextInput, SelectInput, Create } from 'react-admin';
 
 export const UserList: React.FC = () => (
   <List>
@@ -12,6 +12,19 @@ export const UserList: React.FC = () => (
       <DeleteButton />
     </Datagrid>
   </List>
+);
+
+export const UserCreate: React.FC = () => (
+  <Create>
+    <SimpleForm>
+      <TextInput source="username" label="Nom" />
+      <TextInput source="email" label="Email" />
+      <SelectInput source="role" label="Rôle" choices={[
+        { id: 'admin', name: 'Admin' },
+        { id: 'user', name: 'User' },
+      ]} />
+    </SimpleForm>
+  </Create>
 );
 
 export const UserEdit: React.FC = () => (
