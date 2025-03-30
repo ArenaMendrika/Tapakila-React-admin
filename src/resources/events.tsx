@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Accept } from 'react-dropzone';
 import { useEffect, useRef } from 'react';
 import { 
@@ -77,22 +77,20 @@ const CustomToolbar = () => {
     const formData = getValues();
 
     if (!isDraft) {
-        // Vérification des champs obligatoires UNIQUEMENT si on publie l'événement
         const requiredFields = ['title', 'description', 'category', 'startDateTime', 'location', 'organizer'];
         const missingFields = requiredFields.filter(field => !formData[field]);
     
         if (missingFields.length > 0) {
             notify(`Champs obligatoires manquants: ${missingFields.join(', ')}`, { type: 'warning' });
-            return; // Bloque la soumission
+            return; 
         }
     
         if (!formData.tickets || formData.tickets.length === 0) {
             notify("Ajoutez au moins un billet avant de publier", { type: 'warning' });
-            return; // Bloque la soumission
+            return;
         }
     }
 
-    // Toutes les conditions sont remplies, exécute la soumission
     handleSubmit(async (data) => {
         try {
             await dataProvider.create('events', { data });
@@ -226,90 +224,217 @@ interface Ticket {
   saleEnabled: boolean;
 }
 
-// 🔹 Composant pour afficher les billets sous forme de cartes individuelles
 const TicketList: React.FC = () => {
   const record = useRecordContext<{ tickets?: Ticket[] }>();
+  const [bottomOffset, setBottomOffset] = useState(100); // Ajusté pour être plus haut
+
+  useEffect(() => {
+    const eventCard = document.getElementById("event-card");
+    if (eventCard) {
+      const rect = eventCard.getBoundingClientRect();
+      const ticketCount = record?.tickets?.length || 0;
+      setBottomOffset(rect.height / 6 + ticketCount * 5); // Moins d'offset pour remonter
+    }
+  }, [record]);
+
   if (!record || !record.tickets || record.tickets.length === 0) {
     return <Typography>Aucun billet disponible</Typography>;
   }
 
   return (
-    <Box sx={{ maxWidth: 600, margin: "auto", mt: 3 }}>
-      {record.tickets.map((ticket: Ticket, index: number) => (
-        <Card key={index} sx={{ mb: 2, padding: 2 }}>
-          <CardContent>
-            <Typography variant="h6">{ticket.name}</Typography>
-            <Typography>Prix : {ticket.price} €</Typography>
-            <Typography>Quantité : {ticket.quantityAvailable}</Typography>
-            <Typography>Limite Achat : {ticket.purchaseLimitPerUser}</Typography>
-            <Typography>Vente Active : {ticket.saleEnabled ? "Oui" : "Non"}</Typography>
-          </CardContent>
-        </Card>
-      ))}
-    </Box>
+    <Card
+      sx={{
+        maxWidth: 550,
+        marginLeft: 0,
+        borderRadius: 4,
+        overflow: "hidden",
+        position: "relative",
+        marginTop: "-50px", 
+        zIndex: 10,
+        left: "150px", 
+        backgroundColor: "white",
+      }}
+    >
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 0 }}>
+        {record.tickets.map((ticket: Ticket, index: number) => (
+          <Card key={index} sx={{ borderRadius: 0 }}>
+            <Grid
+              container
+              spacing={1}
+              alignItems="center"
+              sx={{ width: "550px",  minHeight: "55px" }}
+            >
+              <Grid item xs={3}>
+                <Typography variant="h6" sx={{ textAlign: "center" }}>
+                  {ticket.name}
+                </Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography>Prix : {ticket.price} Ar</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography>Quantité : {ticket.quantityAvailable}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography>En vente: {ticket.quantityAvailable}</Typography>
+              </Grid>
+            </Grid>
+          </Card>
+        ))}
+      </Box>
+    </Card>
   );
 };
 
 export const EventShow: React.FC = () => (
-  <Show>
-    <SimpleShowLayout>
-      <Card sx={{ maxWidth: 900, margin: "auto", boxShadow: 3, padding: 3 }}>
+  <Show sx={{ marginTop: '20px', padding: 0 }}>
+  <SimpleShowLayout sx={{ padding: 0, margin: 0 }}>
+      <Card
+        id="event-card"
+        sx={{
+          maxWidth: 900,
+          margin: "auto",
+          boxShadow: 3,
+          borderRadius: 3,
+          padding: 3,
+          position: "relative",
+        }}
+      >
         <CardContent>
           <Grid container spacing={3}>
+            <Grid
+              item
+              xs={12}
+              md={8}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginBottom: "20px",
+                }}
+              >
+                <TextField
+                  source="title"
+                  sx={{
+                    fontSize: "2.7rem",
+                    fontFamily: '"Dancing Script", cursive',
+                    fontWeight: "bold",
+                  }}
+                />
+              </Typography>
 
-            {/* 🔹 Informations de l'événement */}
-            <Grid item xs={12} md={8}>
-              <Typography variant="h5">
-                <TextField source="title" />
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{
+                  fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',
+                  fontSize: "1.2rem",
+                }}
+              >
+                Catégorie : {"\u00A0"}
+                <TextField
+                  source="category"
+                  sx={{
+                    fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',
+                    fontSize: "1.1rem",
+                  }}
+                />
               </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Catégorie : <TextField source="category" />
+
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{
+                  fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',
+                  fontSize: "1.2rem",
+                }}
+              >
+                Date & Heure : {"\u00A0"}
+                <DateField
+                  source="startDateTime"
+                  showTime
+                  locales="fr-FR"
+                  options={{
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }}
+                  sx={{
+                    fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',
+                    fontSize: "1.1rem",
+                  }}
+                />
               </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Date & Heure : <DateField source="startDateTime" showTime />
+
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{
+                  fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',
+                  fontSize: "1.2rem",
+                }}
+              >
+                Lieu : {"\u00A0"}
+                <TextField
+                  source="location"
+                  sx={{
+                    fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',
+                    fontSize: "1.1rem",
+                  }}
+                />
               </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Lieu : <TextField source="location" />
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Organisateur : <TextField source="organizer" />
+
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{
+                  fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',
+                  fontSize: "1.2rem",
+                }}
+              >
+                Organisateur : {"\u00A0"}
+                <TextField
+                  source="organizer"
+                  sx={{
+                    fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',
+                    fontSize: "1.1rem",
+                  }}
+                />
               </Typography>
             </Grid>
 
-            {/* 🔹 Image */}
+            {/* Image */}
             <Grid item xs={12} md={4}>
               <Box
                 sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: '100%',
-                  borderRadius: '8px',
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100%",
+                  borderRadius: "8px",
                   boxShadow: 1,
-                  padding: '1rem',
-                  backgroundColor: '#fff',
+                  padding: "1rem",
+                  backgroundColor: "#fff",
                 }}
               >
                 <CloudinaryImage source="imageUrl" />
               </Box>
             </Grid>
-
           </Grid>
         </CardContent>
       </Card>
-
-      {/* 🔹 Liste des billets */}
       <ArrayField source="tickets" label="Billets">
         <TicketList />
       </ArrayField>
-
     </SimpleShowLayout>
   </Show>
 );
-
-
-// Billet design 
-// Search
-// Paoziny list 
-// Profile
-// profile recuperer infos de l'user

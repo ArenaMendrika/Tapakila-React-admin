@@ -20,8 +20,8 @@ export const UserCreate: React.FC = () => (
       <TextInput source="username" label="Nom" />
       <TextInput source="email" label="Email" />
       <SelectInput source="role" label="Rôle" choices={[
-        { id: 'admin', name: 'Admin' },
-        { id: 'user', name: 'User' },
+        { id: 'ADMIN', name: 'Admin' },
+        { id: 'USER', name: 'User' },
       ]} />
     </SimpleForm>
   </Create>
@@ -33,8 +33,8 @@ export const UserEdit: React.FC = () => (
       <TextInput source="username" label="Nom" />
       <TextInput source="email" label="Email" />
       <SelectInput source="role" label="Rôle" choices={[
-        { id: 'admin', name: 'Admin' },
-        { id: 'user', name: 'User' },
+        { id: 'ADMIN', name: 'Admin' },
+        { id: 'USER', name: 'User' },
       ]} />
     </SimpleForm>
   </Edit>

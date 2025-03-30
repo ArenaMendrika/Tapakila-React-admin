@@ -30,13 +30,18 @@ const CustomSidebar = () => {
         {/* Events */}
         <ListItem component="div" onClick={() => navigate('/events')} sx={{ cursor: 'pointer' }}>
           <ListItemIcon><EventIcon /></ListItemIcon>
-          <ListItemText primary="Events" />
+          <ListItemText primary="Evènements" />
         </ListItem>
 
         {/* Events */}
         <ListItem component="div" onClick={() => navigate('/users')} sx={{ cursor: 'pointer' }}>
           <ListItemIcon><AccountCircle/></ListItemIcon>
-          <ListItemText primary="Users" />
+          <ListItemText primary="Utilisateurs" />
+        </ListItem>
+
+        <ListItem component="div" onClick={() => navigate('/drafts')} sx={{ cursor: 'pointer' }}>
+          <ListItemIcon><AccountCircle/></ListItemIcon>
+          <ListItemText primary="Brouillons" />
         </ListItem>
 
       </List>
