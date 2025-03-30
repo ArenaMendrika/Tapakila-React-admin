@@ -47,6 +47,31 @@ const authProvider = {
   },
 
   getPermissions: () => Promise.resolve(),
+
+  getIdentity: async () => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) return Promise.reject();
+
+    console.log("Authorization Header:", `Bearer ${accessToken}`);
+
+    try {
+        const userInfoUrl = "http://localhost:8080/users/me";
+        const { json } = await fetchUtils.fetchJson(userInfoUrl, {
+            method: "GET",
+            headers: new Headers({ Authorization: `Bearer ${accessToken.trim()}` })
+        });
+
+        return Promise.resolve({ 
+            id: json.id, 
+            username: json.username, 
+            email: json.email, 
+            role: json.role
+        });
+    } catch (error) {
+        console.error("Erreur lors de la récupération de l'identité:", error);
+        return Promise.reject();
+    }
+},
 };
 
 export default authProvider;

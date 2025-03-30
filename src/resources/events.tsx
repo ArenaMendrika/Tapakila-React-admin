@@ -312,3 +312,4 @@ export const EventShow: React.FC = () => (
 // Search
 // Paoziny list 
 // Profile
+// profile recuperer infos de l'user
