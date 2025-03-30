@@ -26,63 +26,60 @@ const customDataProvider: DataProvider = {
 
   create: async (resource, params) => {
     if (resource === 'events') {
-        const isDraft = params.data.status === 'DRAFT';
+      const isDraft = params.data.status === 'DRAFT';
+      const eventData: any = { 
+        ...params.data, 
+        status: params.data.status || 'PUBLISHED' 
+      };
 
-        const eventData: any = { 
-            ...params.data, 
-            status: params.data.status || 'PUBLISHED' 
-        };
+      if (!isDraft) {
+        const requiredFields = ['title', 'description', 'category', 'startDateTime', 'location', 'organizer'];
+        const missingFields = requiredFields.filter(field => !eventData[field]);
 
-        if (!isDraft) {
-            // Vérification des champs obligatoires seulement si ce n'est PAS un brouillon
-            const requiredFields = ['title', 'description', 'category', 'startDateTime', 'location', 'organizer'];
-            const missingFields = requiredFields.filter(field => !eventData[field]);
-
-            if (missingFields.length > 0) {
-                throw new Error(`Champs obligatoires manquants: ${missingFields.join(', ')}`);
-            }
-
-            if (!eventData.tickets || eventData.tickets.length === 0) {
-                throw new Error("Ajoutez au moins un billet avant de publier.");
-            }
+        if (missingFields.length > 0) {
+          throw new Error(`Champs obligatoires manquants: ${missingFields.join(', ')}`);
         }
 
-        if (params.data.file && params.data.file.rawFile) {
-            const formData = new FormData();
-            formData.append('event', new Blob([JSON.stringify(eventData)], { type: 'application/json' }));
-            formData.append('file', params.data.file.rawFile);
-
-            const response = await fetch(`${API_URL}/events`, {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Erreur serveur: ${errorText}`);
-            }
-
-            const json = await response.json();
-            return { data: json };
-        } else {
-            const response = await fetch(`${API_URL}/events`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(eventData),
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Erreur serveur: ${errorText}`);
-            }
-
-            const json = await response.json();
-            return { data: json };
+        if (!eventData.tickets || eventData.tickets.length === 0) {
+          throw new Error("Ajoutez au moins un billet avant de publier.");
         }
+      }
+
+      if (params.data.id) {
+        // Si l'ID existe, nous mettons à jour l'événement
+        const response = await fetch(`${API_URL}/events/${params.data.id}`, {
+          method: 'PUT', // Utilisez PUT pour la mise à jour
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(eventData),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Erreur serveur: ${errorText}`);
+        }
+
+        const json = await response.json();
+        return { data: json };
+      } else {
+        // Créer un nouvel événement
+        const response = await fetch(`${API_URL}/events`, {
+          method: 'POST', // Utilisez POST pour la création
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(eventData),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Erreur serveur: ${errorText}`);
+        }
+
+        const json = await response.json();
+        return { data: json };
+      }
     }
 
     return baseDataProvider.create(resource, params);
-}
+  }
 };
 
 export default customDataProvider;

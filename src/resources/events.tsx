@@ -8,9 +8,13 @@ import {
   useNotify, 
   useDataProvider, 
   TopToolbar,
-  CreateButton
+  CreateButton,
+  Show,
+  SimpleShowLayout,
+  DateField,
+  useRecordContext
 } from "react-admin";
-import { Button } from '@mui/material';
+import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
 import DraftsIcon from "@mui/icons-material/Drafts";
 import { 
@@ -40,16 +44,9 @@ import {
 import { useLocation } from 'react-router-dom';
 
 export const EventList: React.FC = () => {
-  const location = useLocation();
-  const highlightedEventId = location.state?.highlightedEventId;
-
   return (
     <List resource="events">
-      <Datagrid
-        rowStyle={(record) =>
-          record.id === highlightedEventId ? { border: "2px solid red" } : {}
-        }
-      >
+      <Datagrid rowClick="show">
         <TextField source="category" label="Catégorie" />
         <TextField source="title" label="Titre" />
         <TextField source="description" label="Description" />
@@ -57,23 +54,9 @@ export const EventList: React.FC = () => {
         <TextField source="location" label="Lieu" />
         <TextField source="organizer" label="Organisateur" />
         <TextField source="status" label="Statut" />
-
-        <ArrayField source="tickets" label="Billets">
-          <Datagrid>
-            <TextField source="name" label="Type" />
-            <NumberField source="price" label="Prix (€)" />
-            <NumberField source="quantityAvailable" label="Quantité" />
-            <NumberField source="purchaseLimitPerUser" label="Limite Achat" />
-            <BooleanField source="saleEnabled" label="Vente Active" />
-          </Datagrid>
-        </ArrayField>
-
-        <ImageField source="imageUrl" label="Image" />
-
-        <EditButton />
-        <DeleteButton />
       </Datagrid>
     </List>
+    
   );
 };
 
@@ -133,12 +116,11 @@ const CustomToolbar = () => {
 };
 
 export const EventCreate = () => {
-
   return (
     <Create>
       <SimpleForm toolbar={<CustomToolbar />}>
-        <TextInput source="title" label="Titre" />
-        <TextInput source="description" label="Description" multiline />
+        <TextInput source="title" label="Titre" required />
+        <TextInput source="description" label="Description" multiline required />
         <SelectInput
           source="category"
           label="Catégorie"
@@ -146,25 +128,26 @@ export const EventCreate = () => {
             { id: 'CONCERT', name: 'Concert' },
             { id: 'CONFERENCE', name: 'Conférence' },
             { id: 'SPORT', name: 'Sport' },
-            { id: 'WORKSHOP', name: 'Workshop'},
-            { id: 'MEETUP', name: 'Meetup'},
-            { id: 'WEBINAR', name: 'Webinar'},
-            { id: 'FESTIVAL', name: 'Festival'}
+            { id: 'WORKSHOP', name: 'Workshop' },
+            { id: 'MEETUP', name: 'Meetup' },
+            { id: 'WEBINAR', name: 'Webinar' },
+            { id: 'FESTIVAL', name: 'Festival' }
           ]}
-          parse={value => (value === "" ? null : value)} 
+          parse={value => (value === "" ? null : value)}
+          required
         />
-        <DateTimeInput source="startDateTime" label="Date et heure de début" />
-        <TextInput source="location" label="Lieu" />
+        <DateTimeInput source="startDateTime" label="Date et heure de début" required />
+        <TextInput source="location" label="Lieu" required />
         <TextInput source="status" defaultValue="PUBLISHED" style={{ display: 'none' }} />
-        <TextInput source="organizer" label="Organisateur" />
+        <TextInput source="organizer" label="Organisateur" required />
 
-        <ArrayInput source="tickets" label="Billets">
+        <ArrayInput source="tickets" label="Billets" required>
           <SimpleFormIterator>
-            <TextInput source="name" label="Type" />
-            <NumberInput source="price" label="Prix (€)" />
-            <NumberInput source="quantityAvailable" label="Quantité Disponible" />
-            <NumberInput source="purchaseLimitPerUser" label="Limite Achat" />
-            <BooleanInput source="saleEnabled" label="Vente Active" />
+            <TextInput source="name" label="Type" required />
+            <NumberInput source="price" label="Prix (€)" required />
+            <NumberInput source="quantityAvailable" label="Quantité Disponible" required />
+            <NumberInput source="purchaseLimitPerUser" label="Limite Achat" required />
+            <BooleanInput source="saleEnabled" label="Vente Active" required />
           </SimpleFormIterator>
         </ArrayInput>
 
@@ -212,3 +195,120 @@ export const EventEdit: React.FC = () => (
     </SimpleForm>
   </Edit>
 );
+
+const CloudinaryImage = ({ source }: { source: string }) => {
+  const record = useRecordContext();
+  const imageUrl = record?.[source];
+
+  if (!imageUrl) return null;
+
+  const transformedUrl = `${imageUrl}?w=600&h=400&c_fill`;
+
+  return (
+    <img
+      src={transformedUrl}
+      alt="Event"
+      style={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover', 
+        objectPosition: 'center', 
+      }}
+    />
+  );
+};
+
+interface Ticket {
+  name: string;
+  price: number;
+  quantityAvailable: number;
+  purchaseLimitPerUser: number;
+  saleEnabled: boolean;
+}
+
+// 🔹 Composant pour afficher les billets sous forme de cartes individuelles
+const TicketList: React.FC = () => {
+  const record = useRecordContext<{ tickets?: Ticket[] }>();
+  if (!record || !record.tickets || record.tickets.length === 0) {
+    return <Typography>Aucun billet disponible</Typography>;
+  }
+
+  return (
+    <Box sx={{ maxWidth: 600, margin: "auto", mt: 3 }}>
+      {record.tickets.map((ticket: Ticket, index: number) => (
+        <Card key={index} sx={{ mb: 2, padding: 2 }}>
+          <CardContent>
+            <Typography variant="h6">{ticket.name}</Typography>
+            <Typography>Prix : {ticket.price} €</Typography>
+            <Typography>Quantité : {ticket.quantityAvailable}</Typography>
+            <Typography>Limite Achat : {ticket.purchaseLimitPerUser}</Typography>
+            <Typography>Vente Active : {ticket.saleEnabled ? "Oui" : "Non"}</Typography>
+          </CardContent>
+        </Card>
+      ))}
+    </Box>
+  );
+};
+
+export const EventShow: React.FC = () => (
+  <Show>
+    <SimpleShowLayout>
+      <Card sx={{ maxWidth: 900, margin: "auto", boxShadow: 3, padding: 3 }}>
+        <CardContent>
+          <Grid container spacing={3}>
+
+            {/* 🔹 Informations de l'événement */}
+            <Grid item xs={12} md={8}>
+              <Typography variant="h5">
+                <TextField source="title" />
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                Catégorie : <TextField source="category" />
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                Date & Heure : <DateField source="startDateTime" showTime />
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                Lieu : <TextField source="location" />
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                Organisateur : <TextField source="organizer" />
+              </Typography>
+            </Grid>
+
+            {/* 🔹 Image */}
+            <Grid item xs={12} md={4}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '100%',
+                  borderRadius: '8px',
+                  boxShadow: 1,
+                  padding: '1rem',
+                  backgroundColor: '#fff',
+                }}
+              >
+                <CloudinaryImage source="imageUrl" />
+              </Box>
+            </Grid>
+
+          </Grid>
+        </CardContent>
+      </Card>
+
+      {/* 🔹 Liste des billets */}
+      <ArrayField source="tickets" label="Billets">
+        <TicketList />
+      </ArrayField>
+
+    </SimpleShowLayout>
+  </Show>
+);
+
+
+// Billet design 
+// Search
+// Paoziny list 
+// Profile
