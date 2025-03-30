@@ -14,7 +14,7 @@ import {
   DateField,
   useRecordContext
 } from "react-admin";
-import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Grid, InputAdornment, Typography } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
 import DraftsIcon from "@mui/icons-material/Drafts";
 import { 
@@ -45,18 +45,43 @@ import { useLocation } from 'react-router-dom';
 
 export const EventList: React.FC = () => {
   return (
-    <List resource="events">
-      <Datagrid rowClick="show">
-        <TextField source="category" label="Catégorie" />
-        <TextField source="title" label="Titre" />
-        <TextField source="description" label="Description" />
-        <TextField source="startDateTime" label="Date & Heure" />
-        <TextField source="location" label="Lieu" />
-        <TextField source="organizer" label="Organisateur" />
-        <TextField source="status" label="Statut" />
+    <List resource="events" sx={{ marginTop: '22px' }}>
+      <Datagrid 
+        rowClick="show" 
+        sx={{
+          '& .MuiTableRow-root': {
+            transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+            '&:hover': {
+              transform: 'scale(1.01)',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+            },
+            borderBottom: '2px solid #ddd',
+          },
+          '& .MuiTableCell-root': {
+            padding: '12px 16px',
+            backgroundColor: '#f9f9f9',
+            border: 'none',
+            textAlign: 'center',
+          },
+          '& .MuiTableHead-root': {
+            backgroundColor: '#fafafa',
+          },
+          '& .MuiTableCell-head': {
+            fontSize: '1.4rem',
+            fontWeight: 'bold',
+            fontFamily: '"Dancing Script", cursive',
+          },
+        }}
+      >
+        
+        <TextField source="category" label="Catégorie" sx={{ fontFamily: '"Poppins", "Roboto", "Arial", sans-serif'}} />
+        <TextField source="title" label="Titre" sx={{fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',}} />
+        <TextField source="startDateTime" label="Date & Heure" sx={{fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',}} />
+        <TextField source="location" label="Lieu" sx={{fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',}}/>
+        <TextField source="organizer" label="Organisateur" sx={{fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',}}/>
+        <TextField source="status" label="Statut" sx={{fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',}}/>
       </Datagrid>
     </List>
-    
   );
 };
 

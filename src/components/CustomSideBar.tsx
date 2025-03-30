@@ -44,6 +44,12 @@ const CustomSidebar = () => {
           <ListItemText primary="Brouillons" />
         </ListItem>
 
+        <ListItem component="div" onClick={() => navigate('/reservations')} sx={{ cursor: 'pointer' }}>
+          <ListItemIcon><AccountCircle/></ListItemIcon>
+          <ListItemText primary="Réservations" />
+        </ListItem>
+
+
       </List>
     </Drawer>
   );
