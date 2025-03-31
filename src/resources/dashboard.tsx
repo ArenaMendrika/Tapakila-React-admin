@@ -113,15 +113,25 @@ const Dashboard: React.FC = () => {
       </Card>
     </Box>
 
-    <Box sx={{ border: "1px solid black", display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-      <Box sx={{ display: "flex", justifyContent: "center", padding: 3, border: "1px solid red" }}>
+    <Box sx={{  display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
+      <Box sx={{display: 'flex', flexDirection: 'column'}}>
+      <Box sx={{ display: "flex", justifyContent: "center", padding: 3, alignItems: 'center' }}>
         <FirstStatistics eventCount={eventCount} userCount={userCount} reservationCount={reservationCount} />
       </Box>
-      <Box sx={{ display: "flex", flexDirection: "column", padding: 3 }}>
-        <RevenueChart revenueData={revenueData} /> {/* Affichage du graphique */}
-      </Box>
-      <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: 3, border: "1px solid red" }}>
+      <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: 3 }}>
         <TicketSalesChart salesCount={salesCount} />
+      </Box>
+      </Box>
+      <Box sx={{display: 'flex', flexDirection: 'column'}}>
+      <Box sx={{ display: "flex", justifyContent: "center", padding: 3, alignItems: 'center' }}>
+        <FirstStatistics eventCount={eventCount} userCount={userCount} reservationCount={reservationCount} />
+      </Box>
+      <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: 3 }}>
+        <TicketSalesChart salesCount={salesCount} />
+      </Box>
+      </Box>
+      <Box sx={{ display: "flex", flexDirection: "column", padding: 3 }}>
+        <RevenueChart revenueData={revenueData} />
       </Box>
     </Box>
   </Box>
