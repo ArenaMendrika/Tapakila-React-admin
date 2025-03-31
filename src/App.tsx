@@ -11,6 +11,7 @@ import { EventList, EventCreate, EventEdit, EventShow } from './resources/events
 import { UserList, UserEdit, UserCreate } from './resources/users';
 import { ReservationList } from './resources/reservations';
 import { DraftEventList } from './resources/draftsEvents';
+import Dashboard from './resources/dashboard';
 
 const App: React.FC = () => {
   const [theme, setTheme] = useState<any>(createTheme({}));
@@ -32,6 +33,7 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <AdminRouter>
         <Admin
+          dashboard={Dashboard} 
           dataProvider={dataProvider}
           authProvider={authProvider}
           loginPage={LoginPage}
@@ -42,7 +44,6 @@ const App: React.FC = () => {
           <Resource name="reservations" list={ReservationList} />
           <Resource name="drafts" list={DraftEventList} />
 
-          {/* Routes personnalisées */}
           <CustomRoutes>
             <Route path="/profile" element={<ProfilePage />} />
           </CustomRoutes>
