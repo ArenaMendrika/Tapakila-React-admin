@@ -6,7 +6,6 @@ import dataProvider from './dataProvider';
 import authProvider from './authProvider';
 import CustomLayout from './components/CustomLayout';
 import LoginPage from './components/LoginPage';
-import ProfilePage from './resources/ProfilePage';
 import { EventList, EventCreate, EventEdit, EventShow } from './resources/events';
 import { UserList, UserEdit, UserCreate } from './resources/users';
 import { ReservationList } from './resources/reservations';
@@ -43,10 +42,6 @@ const App: React.FC = () => {
           <Resource name="users" list={UserList} create={UserCreate} edit={UserEdit} />
           <Resource name="reservations" list={ReservationList} />
           <Resource name="drafts" list={DraftEventList} />
-
-          <CustomRoutes>
-            <Route path="/profile" element={<ProfilePage />} />
-          </CustomRoutes>
         </Admin>
       </AdminRouter>
     </ThemeProvider>

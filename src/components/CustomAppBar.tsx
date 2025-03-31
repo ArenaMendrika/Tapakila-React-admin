@@ -48,28 +48,6 @@ const CustomAppBar = () => {
         />
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Button
-            onClick={handleProfileClick} // Ajout de la fonction ici
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              color: 'white',
-              '&:hover': {
-                backgroundColor: '#ff4081',
-                color: 'white',
-              },
-              padding: '6px 12px',
-              borderRadius: '12px',
-              transition: 'background-color 0.3s ease',
-            }}
-          >
-            <Typography component="span" sx={{ color: 'white' }}>
-              Profile
-            </Typography>
-            <Notifications sx={{ color: 'white' }} />
-          </Button>
-          <span style={{ color: 'white', fontSize: '20px' }}>|</span>
-          <Button
             onClick={handleLogout}
             sx={{
               display: 'flex',
