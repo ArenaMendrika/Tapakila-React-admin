@@ -1,10 +1,10 @@
 import { useGetIdentity } from "react-admin";
 import { Box, Typography, Avatar, Card } from "@mui/material";
 import { useState, useEffect } from "react";
-import StatisticsChart from "../components/StatisticsChart";
 import FirstStatistics from "../components/FirstStatisctics";
 import TicketSalesChart from "../components/StatisticsChart";
 import RevenueChart from "../components/RevenueChart";
+import Top3EventsChart from "../components/Top3EventsChart";
 
 const Dashboard: React.FC = () => {
   const { data: identity, isLoading } = useGetIdentity();
@@ -13,6 +13,7 @@ const Dashboard: React.FC = () => {
   const [reservationCount, setReservationCount] = useState<number | null>(null);
   const [salesCount, setSalesCount] = useState<{ [key: string]: number } | null>(null);
   const [revenueData, setRevenueData] = useState<{ month: string; revenue: number }[]>([]);
+  const [top3Data, setTop3Data] = useState<{ eventName: string; reservationCount: number }[]>([]);
 
 
   useEffect(() => {
@@ -65,6 +66,21 @@ const Dashboard: React.FC = () => {
       })
       .catch((error) => console.error("Erreur lors de la récupération des revenus mensuels:", error));
   }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/events/top3", {
+      headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const formattedData = data.map((item: { eventName: string; reservationCount: number }) => ({
+          name: item.eventName,
+          value: item.reservationCount,
+        }));
+        setTop3Data(formattedData);
+      })
+      .catch((error) => console.error("Erreur lors de la récupération des événements les plus réservés:", error));
+  }, []);
   
 
   return (
@@ -115,21 +131,21 @@ const Dashboard: React.FC = () => {
 
     <Box sx={{  display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
       <Box sx={{display: 'flex', flexDirection: 'column'}}>
-      <Box sx={{ display: "flex", justifyContent: "center", padding: 3, alignItems: 'center' }}>
+        <Box sx={{ display: "flex", justifyContent: "center", padding: 3, alignItems: 'center' }}>
         <FirstStatistics eventCount={eventCount} userCount={userCount} reservationCount={reservationCount} />
-      </Box>
-      <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: 3 }}>
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: 3 }}>
         <TicketSalesChart salesCount={salesCount} />
-      </Box>
+        </Box>
       </Box>
       <Box sx={{display: 'flex', flexDirection: 'column'}}>
-      <Box sx={{ display: "flex", justifyContent: "center", padding: 3, alignItems: 'center' }}>
-        <FirstStatistics eventCount={eventCount} userCount={userCount} reservationCount={reservationCount} />
-      </Box>
-      <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: 3 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", padding: 3, alignItems: 'center', height: '100%' }}>
+        <Top3EventsChart top3Data={top3Data} />
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: 3 }}>
         <TicketSalesChart salesCount={salesCount} />
       </Box>
-      </Box>
+    </Box>
       <Box sx={{ display: "flex", flexDirection: "column", padding: 3 }}>
         <RevenueChart revenueData={revenueData} />
       </Box>
