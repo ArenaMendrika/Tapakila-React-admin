@@ -16,15 +16,27 @@ const CustomAppBar = () => {
 
   return (
     <AppBar
-      sx={{
-        top: 0,
-        left: '200px',
-        width: 'calc(100% - 200px)',
-        background: 'linear-gradient(90deg, #E0C3FC, #8EC5FC)',
-        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-        zIndex: (theme) => theme.zIndex.drawer + 1,
-      }}
-    >
+  sx={{
+    top: 0,
+    left: "200px",
+    width: "calc(100% - 200px)",
+    background: "linear-gradient(90deg, rgba(224, 195, 252, 0.9), rgba(142, 197, 252, 0.9))",
+    backdropFilter: "blur(8px)",
+    boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.12)",
+    borderBottomLeftRadius: "20px",
+    borderBottomRightRadius: "20px",
+    padding: "4px 20px",
+    transition: "all 0.3s ease-in-out",
+
+    "&:hover": {
+      background: "linear-gradient(90deg, rgba(224, 195, 252, 1), rgba(142, 197, 252, 1))",
+      boxShadow: "0px 8px 18px rgba(0, 0, 0, 0.15)",
+    },
+
+    zIndex: (theme) => theme.zIndex.drawer + 1,
+  }}
+>
+
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <TextField
           variant="outlined"

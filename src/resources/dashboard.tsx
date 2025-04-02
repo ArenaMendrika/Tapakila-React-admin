@@ -105,7 +105,7 @@ const Dashboard: React.FC = () => {
   
 
   return (
-    <Box sx={{ minHeight: "100vh", padding: 3, backgroundColor: "#f4f6f8", display: "flex", flexDirection: "column" }}>
+    <Box sx={{ minHeight: "100vh", padding: 3, backgroundColor: "#f4f6f8", display: "flex", flexDirection: "column" , marginTop: '20px'}}>
     <Box sx={{ display: "flex", flexDirection: "row", gap: 3 }}>
       <Card
         sx={{
