@@ -118,8 +118,9 @@ const dataProvider: DataProvider = {
     }).then(({ json }) => ({ data: json }));
   },
 
-  delete: async () => {
-    throw new Error("Suppression non prise en charge.");
+  delete: async (resource, params) => {
+    const { json } = await httpClient(`${API_URL}/${resource}/${params.id}`);
+    return { data: json };
   },
   
 

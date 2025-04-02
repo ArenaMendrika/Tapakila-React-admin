@@ -49,7 +49,9 @@ const authProvider = {
   getPermissions: () => Promise.resolve(),
 
   getIdentity: async () => {
-    const accessToken = localStorage.getItem("accessToken");
+    let accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+
     if (!accessToken) return Promise.reject();
 
     console.log("Authorization Header:", `Bearer ${accessToken}`);
@@ -61,14 +63,50 @@ const authProvider = {
             headers: new Headers({ Authorization: `Bearer ${accessToken.trim()}` })
         });
 
-        return Promise.resolve({ 
-            id: json.id, 
-            username: json.username, 
-            email: json.email, 
-            role: json.role
+        return Promise.resolve({
+            id: json.id,
+            username: json.username,
+            email: json.email,
+            role: json.role,
         });
+
     } catch (error) {
         console.error("Erreur lors de la récupération de l'identité:", error);
+
+        if (error.status === 401 && refreshToken) {
+            try {
+                const refreshResponse = await fetch("http://localhost:8080/auth/refresh", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ refreshToken })
+                });
+
+                if (!refreshResponse.ok) {
+                    console.error("Échec du rafraîchissement du token");
+                    return Promise.reject();
+                }
+
+                const { accessToken: newAccessToken } = await refreshResponse.json();
+                localStorage.setItem("accessToken", newAccessToken);
+
+                const { json: refreshedJson } = await fetchUtils.fetchJson("http://localhost:8080/users/me", {
+                    method: "GET",
+                    headers: new Headers({ Authorization: `Bearer ${newAccessToken.trim()}` })
+                });
+
+                return Promise.resolve({
+                    id: refreshedJson.id,
+                    username: refreshedJson.username,
+                    email: refreshedJson.email,
+                    role: refreshedJson.role,
+                });
+
+            } catch (refreshError) {
+                console.error("Erreur lors du rafraîchissement du token:", refreshError);
+                return Promise.reject();
+            }
+        }
+
         return Promise.reject();
     }
 },
