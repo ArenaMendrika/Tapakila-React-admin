@@ -6,7 +6,7 @@ export const TicketList: React.FC = () => (
     <Datagrid>
       <TextField source="id" />
       <TextField source="name" label="Nom du Billet" />
-      <TextField source="price" label="Prix (€)" />
+      <TextField source="price" label="Prix " />
       <TextField source="availability" label="Disponibilité" />
       <EditButton />
       <DeleteButton />
@@ -18,7 +18,7 @@ export const TicketCreate: React.FC = () => (
   <Create>
     <SimpleForm>
       <TextInput source="name" label="Nom du Billet" />
-      <NumberInput source="price" label="Prix (€)" />
+      <NumberInput source="price" label="Prix" />
       <NumberInput source="availability" label="Disponibilité" />
     </SimpleForm>
   </Create>
