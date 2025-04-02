@@ -5,6 +5,8 @@ import FirstStatistics from "../components/FirstStatisctics";
 import TicketSalesChart from "../components/StatisticsChart";
 import RevenueChart from "../components/RevenueChart";
 import Top3EventsChart from "../components/Top3EventsChart";
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
 
 const Dashboard: React.FC = () => {
   const { data: identity, isLoading } = useGetIdentity();
@@ -14,6 +16,25 @@ const Dashboard: React.FC = () => {
   const [salesCount, setSalesCount] = useState<{ [key: string]: number } | null>(null);
   const [revenueData, setRevenueData] = useState<{ month: string; revenue: number }[]>([]);
   const [top3Data, setTop3Data] = useState<{ eventName: string; reservationCount: number }[]>([]);
+
+  useEffect(() => {
+    const calendar = document.querySelector('.fc') as HTMLElement;
+    if (calendar) {
+      calendar.style.fontFamily = '"Poppins", sans-serif';  // Applique la police à l'ensemble du calendrier
+    }
+
+    // Pour cibler spécifiquement des éléments comme les jours ou les en-têtes
+    const headerToolbar = document.querySelector('.fc-header-toolbar') as HTMLElement;
+    if (headerToolbar) {
+      headerToolbar.style.fontFamily = '"Poppins", sans-serif';
+    }
+
+    const dayGridDays = document.querySelectorAll('.fc-daygrid-day') as NodeListOf<HTMLElement>;
+    dayGridDays.forEach(day => {
+      day.style.fontFamily = '"Poppins", sans-serif';
+    });
+
+  }, []);
 
 
   useEffect(() => {
@@ -130,22 +151,19 @@ const Dashboard: React.FC = () => {
     </Box>
 
     <Box sx={{  display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
-      <Box sx={{display: 'flex', flexDirection: 'column'}}>
+      <Box sx={{display: "flex", flexDirection: "column"}}>
+      <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center'}}>
         <Box sx={{ display: "flex", justifyContent: "center", padding: 3, alignItems: 'center' }}>
         <FirstStatistics eventCount={eventCount} userCount={userCount} reservationCount={reservationCount} />
         </Box>
-        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: 3 }}>
+        <Box sx={{ display: "flex", flexDirection: "column",alignItems: 'center', justifyContent: "center", padding: 3, height: '100%'}}>
         <TicketSalesChart salesCount={salesCount} />
         </Box>
       </Box>
-      <Box sx={{display: 'flex', flexDirection: 'column'}}>
         <Box sx={{ display: "flex", justifyContent: "center", padding: 3, alignItems: 'center', height: '100%' }}>
         <Top3EventsChart top3Data={top3Data} />
         </Box>
-        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: 3 }}>
-        <TicketSalesChart salesCount={salesCount} />
       </Box>
-    </Box>
       <Box sx={{ display: "flex", flexDirection: "column", padding: 3 }}>
         <RevenueChart revenueData={revenueData} />
       </Box>

@@ -8,12 +8,12 @@ interface StatisticsChartProps {
 }
 
 const FirstStatistics: React.FC<StatisticsChartProps> = ({ eventCount, userCount, reservationCount }) => {
-  const maxValue = Math.max(eventCount ?? 0, userCount ?? 0, reservationCount ?? 0, 1); // Évite 0 pour LinearProgress
+  const maxValue = Math.max(eventCount ?? 0, userCount ?? 0, reservationCount ?? 0, 1); 
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
       <Card sx={{ p: 2, borderRadius: 3, boxShadow: 3 }}>
-        <Typography fontWeight="bold" sx={{ fontSize: "1.8rem", fontFamily: '"Dancing Script", cursive', textAlign: "center" }}>
+        <Typography fontWeight="bold" sx={{ fontSize: "1.7rem", fontFamily: '"Dancing Script", cursive', textAlign: "center" }}>
           Statistiques Générales
         </Typography>
 

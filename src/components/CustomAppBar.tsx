@@ -6,16 +6,12 @@ import { useLogout } from 'react-admin';
 
 const CustomAppBar = () => {
   const [search, setSearch] = useState('');
-  const navigate = useNavigate(); // Ajoute useNavigate ici
+  const navigate = useNavigate(); 
   const logout = useLogout();
 
   const handleLogout = async () => {
     await logout();
     navigate('/login');
-  };
-
-  const handleProfileClick = () => {
-    navigate('/profile'); // Redirige vers la page du profil
   };
 
   return (
@@ -47,31 +43,38 @@ const CustomAppBar = () => {
           }}
         />
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Button
-            onClick={handleLogout}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              color: 'white',
-              '&:hover': {
-                backgroundColor: '#ff4081',
-                color: 'white',
-              },
-              '&:active': {
-                backgroundColor: '#d500f9',
-              },
-              padding: '6px 12px',
-              borderRadius: '12px',
-              transition: 'background-color 0.3s ease',
-            }}
-          >
-            <Typography component="span" sx={{ color: 'white' }}>
-              Logout
-            </Typography>
-            <PowerSettingsNew sx={{ color: 'white' }} />
-          </Button>
-        </Box>
+  <Button
+    onClick={handleLogout}
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 1.5,
+      color: 'white',
+      background: 'linear-gradient(135deg, #A1C4FD 0%, #C2E9FB 100%)',
+      padding: '10px 18px',
+      borderRadius: '25px',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      textTransform: 'none',
+      transition: 'all 0.3s ease-in-out',
+      boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+      
+      '&:hover': {
+        background: 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)',
+        transform: 'translateY(-2px)',
+        boxShadow: '0px 6px 14px rgba(0, 0, 0, 0.25)',
+      },
+      
+      '&:active': {
+        background: 'linear-gradient(135deg, #d500f9 0%, #ff4081 100%)',
+        transform: 'scale(0.98)',
+      }
+    }}
+  >
+    <PowerSettingsNew sx={{ fontSize: 22 }} />
+    Déconnexion
+  </Button>
+</Box>
       </Toolbar>
     </AppBar>
   );

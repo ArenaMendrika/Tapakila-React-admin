@@ -91,7 +91,6 @@ const customDataProvider: DataProvider = {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("Erreur serveur:", errorText);
         throw new Error(`Erreur serveur: ${errorText}`);
       }
 

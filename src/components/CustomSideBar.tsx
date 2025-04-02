@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Drawer, List, ListItemIcon, ListItemText } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import EventIcon from "@mui/icons-material/Event";
-import AccountCircle from "@mui/icons-material/AccountCircle";
+import PeopleIcon from "@mui/icons-material/People";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import DraftsIcon from "@mui/icons-material/Drafts";
 import { useNavigate } from "react-router-dom";
 import { border, color, height, styled } from "@mui/system";
 
@@ -87,9 +89,9 @@ const CustomSidebar = () => {
         {[
           { path: "/", icon: <DashboardIcon />, label: "Dashboard" },
           { path: "/events", icon: <EventIcon />, label: "Événements" },
-          { path: "/users", icon: <AccountCircle />, label: "Utilisateurs" },
-          { path: "/reservations", icon: <AccountCircle />, label: "Réservations" },
-          { path: "/drafts", icon: <AccountCircle />, label: "Brouillons" },
+          { path: "/users", icon: <PeopleIcon />, label: "Utilisateurs" },
+          { path: "/reservations", icon: <BookmarkIcon />, label: "Réservations" },
+          { path: "/drafts", icon: <DraftsIcon />, label: "Brouillons" },
         ].map(({ path, icon, label }) => (
           <SidebarItem key={path} active={active === path} onClick={() => handleNavigation(path)}>
             <ListItemIcon sx={{ minWidth: "auto", marginLeft: "0px" }}>{icon}</ListItemIcon>

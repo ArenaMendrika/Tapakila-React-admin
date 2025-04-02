@@ -2,13 +2,9 @@ import React from "react";
 import { Box, Card, Typography } from "@mui/material";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
-const generateColors = (count: number): string[] => {
-    const colors = [];
-    for (let i = 0; i < count; i++) {
-      colors.push(`hsl(${(i * 360) / count}, 70%, 50%)`);
-    }
-    return colors;
-  };
+const generatePastelColors = (count: number): string[] => {
+  return Array.from({ length: count }, (_, i) => `hsl(${(i * 360) / count}, 80%, 80%)`);
+};
   
 interface TicketSalesChartProps {
   salesCount: Record<string, number> | null;
@@ -20,16 +16,16 @@ const TicketSalesChart: React.FC<TicketSalesChartProps> = ({ salesCount }) => {
   }
 
   const data = Object.entries(salesCount).map(([name, count]) => ({ name, value: count }));
-  const colors = generateColors(data.length);
+  const colors = generatePastelColors(data.length);
 
   return (
 <Box
   sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}
 >
-  <Card sx={{ p: 2, borderRadius: 3, boxShadow: 3 }}>
+  <Card sx={{ p: 2, borderRadius: 3, boxShadow: 3 , height: '97%'}}>
     <Typography
       fontWeight="bold"
-      sx={{ fontSize: "1.5rem", fontFamily: '"Dancing Script", cursive', textAlign: "center" }}
+      sx={{ fontSize: "1.7rem", fontFamily: '"Dancing Script", cursive', textAlign: "center" }}
     >
       Tickets vendus par type
     </Typography>

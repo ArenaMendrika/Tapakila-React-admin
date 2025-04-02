@@ -1,6 +1,6 @@
 import React from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { Box, Card } from "@mui/material";
+import { Box, Card, Typography } from "@mui/material";
 
 interface Top3EventsChartProps {
   top3Data: { eventName: string; reservationCount: number }[];
@@ -10,12 +10,16 @@ const Top3EventsChart: React.FC<Top3EventsChartProps> = ({ top3Data }) => {
     return (
       <Box sx={{ 
         width: "100%", 
-        height: 210, 
+        height: 220, 
         display: 'flex', 
         justifyContent: "center", 
         alignItems: "center",
       }}>
+
         <Card sx={{ p: 2, borderRadius: 3, boxShadow: 3, width: '100%', height: '100%'}}>
+        < Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: '"Dancing Script", cursive', textAlign: "center", fontSize: '1.8rem'}}>
+        Top 3 évènements les plus réservés
+      </Typography>
         <ResponsiveContainer width="100%" height="100%" style={{marginLeft: '-30px', display: 'flex', 
         justifyContent: "center", 
         alignItems: "center"}}>
