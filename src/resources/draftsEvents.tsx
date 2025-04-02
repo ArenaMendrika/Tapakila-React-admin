@@ -66,7 +66,7 @@ export const DraftEventList: React.FC = () => (
 
       <ImageField source="imageUrl" label="Image" sx={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '8px' }} />
 
-      <EditButton />
+      <EditButton resource="events" />
       <DeleteButton />
     </Datagrid>
   </List>
