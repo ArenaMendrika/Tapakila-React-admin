@@ -87,6 +87,20 @@ const dataProvider: DataProvider = {
   },
 
   update: async (resource, params) => {
+    if (resource === 'users' && params.data.newPassword) {
+      return httpClient(`${API_URL}/users/${params.id}/password`, {
+        method: 'PUT',
+        body: JSON.stringify(params.data),
+      }).then(({ json }) => ({ data: json }));
+    }
+
+    if (resource === 'users') {
+      return httpClient(`${API_URL}/users/${params.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(params.data),
+      }).then(({ json }) => ({ data: json }));
+    }    
+    
     if (resource === 'events') {
       const eventData: EventData = { ...params.data };
       const formData = new FormData();
@@ -123,7 +137,6 @@ const dataProvider: DataProvider = {
     return { data: json };
   },
   
-
   getMany: async (resource, params) => {
     const url = `${API_URL}/${resource}?id=${params.ids.join(',')}`;
     const { json } = await httpClient(url);

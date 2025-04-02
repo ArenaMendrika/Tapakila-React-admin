@@ -5,8 +5,7 @@ import FirstStatistics from "../components/FirstStatisctics";
 import TicketSalesChart from "../components/StatisticsChart";
 import RevenueChart from "../components/RevenueChart";
 import Top3EventsChart from "../components/Top3EventsChart";
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
+import { useNavigate } from "react-router-dom";
 
 const Dashboard: React.FC = () => {
   const { data: identity, isLoading } = useGetIdentity();
@@ -16,14 +15,14 @@ const Dashboard: React.FC = () => {
   const [salesCount, setSalesCount] = useState<{ [key: string]: number } | null>(null);
   const [revenueData, setRevenueData] = useState<{ month: string; revenue: number }[]>([]);
   const [top3Data, setTop3Data] = useState<{ eventName: string; reservationCount: number }[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const calendar = document.querySelector('.fc') as HTMLElement;
     if (calendar) {
-      calendar.style.fontFamily = '"Poppins", sans-serif';  // Applique la police à l'ensemble du calendrier
+      calendar.style.fontFamily = '"Poppins", sans-serif';  
     }
 
-    // Pour cibler spécifiquement des éléments comme les jours ou les en-têtes
     const headerToolbar = document.querySelector('.fc-header-toolbar') as HTMLElement;
     if (headerToolbar) {
       headerToolbar.style.fontFamily = '"Poppins", sans-serif';
@@ -129,25 +128,29 @@ const Dashboard: React.FC = () => {
       </Card>
 
       <Card
-        sx={{
-          flex: 1,
-          borderRadius: 3,
-          padding: 2,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          minHeight: 150,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <Avatar src="/doctor-avatar.jpg" sx={{ width: 64, height: 64 }} />
-          <Box>
-            <Typography variant="h6" fontWeight="bold">{identity?.username}</Typography>
-            <Typography variant="body2" color="textSecondary">{identity?.role}</Typography>
-            <Typography variant="body2" color="textSecondary">{identity?.email}</Typography>
-          </Box>
-        </Box>
-      </Card>
+  sx={{
+    flex: 1,
+    borderRadius: 3,
+    padding: 2,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    minHeight: 150,
+    border: '1px solid red',
+    cursor: 'pointer'
+  }}
+  onClick={() => navigate(`/edit-profile`)} 
+>
+  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+    <Avatar src="" sx={{ width: 64, height: 64 }} />
+    <Box>
+      <Typography variant="h6" fontWeight="bold">{identity?.username}</Typography>
+      <Typography variant="body2" color="textSecondary">{identity?.role}</Typography>
+      <Typography variant="body2" color="textSecondary">{identity?.email}</Typography>
+    </Box>
+  </Box>
+</Card>
+
     </Box>
 
     <Box sx={{  display: "flex", flexDirection: "row", justifyContent: "space-around" }}>

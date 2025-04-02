@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Admin, AdminRouter, Resource, CustomRoutes } from 'react-admin';
 import { Route } from 'react-router-dom';
-import { ThemeProvider, createTheme, Typography, TextField } from '@mui/material'; // Assurez-vous d'importer les composants nécessaires
+import { ThemeProvider, createTheme } from '@mui/material';
 import dataProvider from './dataProvider';
 import authProvider from './authProvider';
 import CustomLayout from './components/CustomLayout';
@@ -11,11 +11,11 @@ import { UserList, UserEdit, UserCreate } from './resources/users';
 import { ReservationList } from './resources/reservations';
 import { DraftEventList } from './resources/draftsEvents';
 import Dashboard from './resources/dashboard';
+import ProfilePage from './resources/ProfilePage';
 
 const App: React.FC = () => {
   const [theme, setTheme] = useState<any>(createTheme({}));
 
-  // Utiliser useEffect pour ajouter les polices Poppins et Dancing Script
   useEffect(() => {
     const linkPoppins = document.createElement('link');
     linkPoppins.rel = 'stylesheet';
@@ -32,7 +32,7 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <AdminRouter>
         <Admin
-          dashboard={Dashboard} 
+          dashboard={Dashboard}
           dataProvider={dataProvider}
           authProvider={authProvider}
           loginPage={LoginPage}
@@ -42,6 +42,10 @@ const App: React.FC = () => {
           <Resource name="users" list={UserList} create={UserCreate} edit={UserEdit} />
           <Resource name="reservations" list={ReservationList} />
           <Resource name="drafts" list={DraftEventList} />
+
+          <CustomRoutes>
+          <Route path="/edit-profile" element={<ProfilePage />} />
+        </CustomRoutes>
         </Admin>
       </AdminRouter>
     </ThemeProvider>
