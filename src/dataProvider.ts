@@ -18,22 +18,25 @@ interface EventData {
 
 const dataProvider: DataProvider = {
   getList: async (resource, params) => {
-    const { page = 1, perPage = 10 } = params.pagination || {};
-    const { field = 'id', order = 'ASC' } = params.sort || {};
-    
-    const url = `${API_URL}/${resource}?_page=${page}&_limit=${perPage}&_sort=${field}&_order=${order}`;
-    const { json } = await httpClient(url);
-    
-    let data = json;
+    const { status } = params.filter || {};
+
+    let url;
     if (resource === 'events') {
-      data = data.filter((event: EventData) => event.status === 'PUBLISHED');
+        url = status === 'CANCELED'
+            ? `${API_URL}/events/canceled`
+            : `${API_URL}/events/published`; // Par défaut, charge les PUBLISHED
+    } else {
+        url = `${API_URL}/${resource}`;
     }
-    
+
+    const { json } = await httpClient(url);
+    console.log("Données reçues pour", status, json);
+
     return {
-      data,
-      total: json.length,
+        data: json,
+        total: json.length, // Garde total pour éviter d'éventuels bugs avec React-Admin
     };
-  },
+},
 
   getOne: async (resource, params) => {
     const { json } = await httpClient(`${API_URL}/${resource}/${params.id}`);
@@ -46,6 +49,7 @@ const dataProvider: DataProvider = {
         const isDraft = eventData.status === 'DRAFT';
         const formData = new FormData();
 
+        // Vérification avant suppression
         if (params.data.file) {
             formData.append('file', params.data.file.rawFile);
         }
@@ -120,7 +124,7 @@ update: async (resource, params) => {
         formData.append('event', new Blob([JSON.stringify(eventData)], { type: 'application/json' }));
 
         try {
-            const response = await fetch(`${API_URL}/events/${params.id}`, {
+            const response = await fetch(`${API_URL}/events/${params.id}/multi-part`, {
                 method: 'PUT',
                 body: formData,
             });

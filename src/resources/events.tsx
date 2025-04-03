@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Accept } from 'react-dropzone';
 import { useEffect, useRef } from 'react';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   SaveButton, 
   Toolbar, 
@@ -11,7 +12,11 @@ import {
   Show,
   SimpleShowLayout,
   DateField,
-  useRecordContext
+  useRecordContext,
+  useListContext,
+  TopToolbar,
+  CreateButton,
+  ExportButton
 } from "react-admin";
 import { Box, Button, Card, CardContent, Grid, InputAdornment, Typography } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
@@ -41,9 +46,47 @@ import {
   SimpleFormIterator 
 } from 'react-admin';
 
-export const EventList: React.FC = () => {
+
+
+const EventListActions = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const filterParam = new URLSearchParams(location.search).get('filter');
+  const currentFilter = filterParam ? JSON.parse(filterParam) : {};
+  const isCanceledView = currentFilter.status === 'CANCELED';
+
+  const handleToggleView = () => {
+    const newFilter = isCanceledView
+      ? {} // Revient aux événements publiés (par défaut)
+      : { status: 'CANCELED' };
+
+    navigate(`/events?filter=${encodeURIComponent(JSON.stringify(newFilter))}`);
+  };
+
   return (
-    <List resource="events" sx={{ marginTop: '22px' }}>
+    <TopToolbar>
+      <CreateButton />
+      <ExportButton />
+      <Button onClick={handleToggleView}>
+        {isCanceledView ? 'Voir événements publiés' : 'Voir événements annulés'}
+      </Button>
+    </TopToolbar>
+  );
+};
+
+
+
+export const EventList: React.FC = () => {
+
+  const location = useLocation();
+  const filterParam = new URLSearchParams(location.search).get('filter');
+  const currentFilter = filterParam ? JSON.parse(filterParam) : {};
+  const currentStatus = currentFilter.status || 'PUBLISHED';
+  return (
+    <List resource="events"  actions={<EventListActions />}
+    filter={{ status: currentStatus }} // Applique le bon filtre
+    pagination={false} sx={{ marginTop: '22px' }}>
       <Datagrid 
         rowClick="show" 
         sx={{
@@ -132,11 +175,12 @@ const CustomToolbar = () => {
     handleSubmit(async (data) => {
         try {
             if (status === 'CANCELED') {
-                await dataProvider.update('events', {
-                    id: data.id,
-                    data: { status: 'CANCELED' },
-                    previousData: data, // Ajout de previousData pour éviter l'erreur
-                });
+              await dataProvider.update('events', {
+                id: data.id,
+                data: { ...data, status: 'CANCELED' },
+                previousData: data,
+            });
+            
                 notify("Événement annulé avec succès", { type: 'success' });
             } else {
                 await dataProvider.create('events', { data });
@@ -180,8 +224,6 @@ const CustomToolbar = () => {
 </Toolbar>
 
 );
-
-
 };
 
 export const EventCreate = () => {
