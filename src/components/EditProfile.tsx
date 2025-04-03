@@ -17,57 +17,88 @@ const EditProfile: React.FC = () => {
     }
   }, []);
 
-  // Fonction d'update personnalisée qui appelle ton dataProvider
   const handleUpdateUsername = async () => {
     console.log("Tentative de mise à jour du nom d'utilisateur...");
     const userId = localStorage.getItem("userId");
+    const refreshToken = localStorage.getItem("refreshToken");
 
-    if (!userId) {
-      console.error("Erreur: ID utilisateur introuvable.");
-      return;
+    if (!userId || !refreshToken) {
+        console.error("Erreur: ID utilisateur ou refresh token introuvable.");
+        return;
     }
 
     console.log("Données envoyées pour mise à jour:", { username });
 
     setLoading(true);
     try {
-      // Appel direct au dataProvider pour mettre à jour
-      const response = await updateUserData(userId, { username });
-      console.log("Réponse de l'API après mise à jour:", response);
+        // Étape 1 : Mettre à jour l'username
+        const response = await updateUserData(userId, { username });
+        console.log("Réponse de l'API après mise à jour:", response);
 
-      alert("Nom d'utilisateur mis à jour !");
+        // Étape 2 : Rafraîchir le token après l'update
+        const newAccessToken = await refreshAccessToken(refreshToken);
+        if (newAccessToken) {
+            localStorage.setItem("accessToken", newAccessToken);
+            console.log("Nouveau token stocké !");
+        } else {
+            console.error("Échec du rafraîchissement du token.");
+        }
+
+        alert("Nom d'utilisateur mis à jour !");
     } catch (error) {
-      console.error("Erreur lors de la mise à jour via API:", error);
-      alert("Erreur lors de la mise à jour.");
+        console.error("Erreur lors de la mise à jour:", error);
+        alert("Erreur lors de la mise à jour.");
     } finally {
-      setLoading(false);
-      console.log("Chargement terminé.");
+        setLoading(false);
+        console.log("Chargement terminé.");
     }
-  };
+};
 
-  // Fonction personnalisée pour appeler ton dataProvider
-  const updateUserData = async (userId: string, data: { username: string }) => {
-    const API_URL = "https://your-api-url.com"; // Remplace par ton URL d'API
+// ✅ Mise à jour du username via API
+const updateUserData = async (userId: string, data: { username: string }) => {
+    const API_URL = "http://localhost:8080"; 
     console.log(`Appel à l'API pour mettre à jour l'utilisateur ${userId}...`);
     
     const response = await fetch(`${API_URL}/users/${userId}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-      },
+        method: "PUT",
+        body: JSON.stringify(data),
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
+        },
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Erreur serveur:", errorText);
-      throw new Error(`Erreur serveur: ${errorText}`);
+        const errorText = await response.text();
+        console.error("Erreur serveur:", errorText);
+        throw new Error(`Erreur serveur: ${errorText}`);
     }
 
-    const json = await response.json();
-    console.log("Réponse JSON de l'API:", json);
-    return json;
-  };
+    return await response.json();
+};
+
+// ✅ Rafraîchir le token après la mise à jour
+const refreshAccessToken = async (refreshToken: string) => {
+    const API_URL = "http://localhost:8080/auth/refresh";
+
+    console.log("Tentative de rafraîchissement du token...");
+
+    const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken }),
+    });
+
+    if (!response.ok) {
+        console.error("Échec du rafraîchissement du token.");
+        return null;
+    }
+
+    const data = await response.json();
+    console.log("Nouveau token reçu:", data.accessToken);
+    return data.accessToken;
+};
+
 
   return (
     <div>

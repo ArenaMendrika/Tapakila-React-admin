@@ -136,7 +136,6 @@ const Dashboard: React.FC = () => {
     flexDirection: "column",
     justifyContent: "center",
     minHeight: 150,
-    border: '1px solid red',
     cursor: 'pointer'
   }}
   onClick={() => navigate(`/edit-profile`)} 
