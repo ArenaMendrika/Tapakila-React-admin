@@ -8,8 +8,6 @@ import {
   useRedirect, 
   useNotify, 
   useDataProvider, 
-  TopToolbar,
-  CreateButton,
   Show,
   SimpleShowLayout,
   DateField,
@@ -42,7 +40,6 @@ import {
   ArrayInput, 
   SimpleFormIterator 
 } from 'react-admin';
-import { useLocation } from 'react-router-dom';
 
 export const EventList: React.FC = () => {
   return (
@@ -93,7 +90,6 @@ export const EventList: React.FC = () => {
     fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',
   }}
 />
-
         <TextField source="location" label="Lieu" sx={{fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',}}/>
         <TextField source="organizer" label="Organisateur" sx={{fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',}}/>
         <TextField source="status" label="Statut" sx={{fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',}}/>
@@ -154,17 +150,37 @@ const CustomToolbar = () => {
     })();
 };
 
-return (
+  return (
     <Toolbar>
-        <SaveButton label="Save" onClick={() => handleSave('PUBLISHED')} />
-        <Button onClick={() => handleSave('DRAFT')} variant="contained" startIcon={<DraftsIcon />}>
-            Draft
+    <Box sx={{ display: "flex", gap: 2 }}> 
+        <SaveButton 
+            label="ENREGISTRER" 
+            onClick={() => handleSave('PUBLISHED')} 
+            sx={{ 
+                backgroundColor: '#81C784', 
+                color: 'white',
+                '&:hover': { backgroundColor: 'darkgreen' } 
+            }} 
+        />
+        <Button onClick={() => handleSave('DRAFT')} variant="contained" startIcon={<DraftsIcon />} sx={{ 
+                backgroundColor: '#64B5F6', 
+                color: 'white',
+                '&:hover': { backgroundColor: 'blue' } 
+            }} >
+            BROUILLON
         </Button>
-        <Button onClick={() => handleSave('CANCELED')} variant="contained" color="error">
-            Annuler
+        <Button onClick={() => handleSave('CANCELED')} variant="contained" startIcon={<CancelIcon />} sx={{ 
+                backgroundColor: '#E57373', 
+                color: 'white',
+                '&:hover': { backgroundColor: 'red' } 
+            }}>
+            ANNULER
         </Button>
-    </Toolbar>
+    </Box>
+</Toolbar>
+
 );
+
 
 };
 

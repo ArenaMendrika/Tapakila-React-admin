@@ -83,7 +83,7 @@ const CustomSidebar = () => {
     >
       <List sx={{ height: "80%", display: "flex", flexDirection: "column", justifyContent: "space-around" }}>
         <div style={{ padding: "16px", display: "flex", justifyContent: "center" }}>
-          <img src="/tapakila.png" alt="Logo" style={{ width: "150px", height: "auto" }} />
+          <img src="/tapakila2.png" alt="Logo" style={{ width: "150px", height: "auto" }} />
         </div>
 
         {[

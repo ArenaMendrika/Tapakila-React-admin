@@ -5,7 +5,6 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useLogout } from 'react-admin';
 
 const CustomAppBar = () => {
-  const [search, setSearch] = useState('');
   const navigate = useNavigate(); 
   const logout = useLogout();
 
@@ -36,25 +35,12 @@ const CustomAppBar = () => {
     zIndex: (theme) => theme.zIndex.drawer + 1,
   }}
 >
+<Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+    {/* Ajoute ici d'autres éléments si besoin, comme le logo ou le titre */}
+  </Box>
 
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder="Search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          sx={{
-            backgroundColor: 'white',
-            borderRadius: '20px',
-            width: '250px',
-            '& .MuiOutlinedInput-root': { borderRadius: '20px', paddingRight: '8px' },
-          }}
-          InputProps={{
-            endAdornment: <Search />,
-          }}
-        />
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+  {/* Le bouton de déconnexion à droite */}
   <Button
     onClick={handleLogout}
     sx={{
@@ -70,13 +56,12 @@ const CustomAppBar = () => {
       textTransform: 'none',
       transition: 'all 0.3s ease-in-out',
       boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-      
+      marginLeft: 'auto', // 🔥 Pousse le bouton vers la droite
       '&:hover': {
         background: 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)',
         transform: 'translateY(-2px)',
         boxShadow: '0px 6px 14px rgba(0, 0, 0, 0.25)',
       },
-      
       '&:active': {
         background: 'linear-gradient(135deg, #d500f9 0%, #ff4081 100%)',
         transform: 'scale(0.98)',
@@ -86,8 +71,8 @@ const CustomAppBar = () => {
     <PowerSettingsNew sx={{ fontSize: 22 }} />
     Déconnexion
   </Button>
-</Box>
-      </Toolbar>
+</Toolbar>
+
     </AppBar>
   );
 };
