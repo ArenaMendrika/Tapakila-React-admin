@@ -18,7 +18,7 @@ import {
   CreateButton,
   ExportButton
 } from "react-admin";
-import { Box, Button, Card, CardContent, Grid, InputAdornment, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Grid, InputAdornment, Tooltip, Typography } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
 import DraftsIcon from "@mui/icons-material/Drafts";
 import { 
@@ -45,6 +45,7 @@ import {
   ArrayInput, 
   SimpleFormIterator 
 } from 'react-admin';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 
 
@@ -58,7 +59,7 @@ const EventListActions = () => {
 
   const handleToggleView = () => {
     const newFilter = isCanceledView
-      ? {} // Revient aux événements publiés (par défaut)
+      ? {}
       : { status: 'CANCELED' };
 
     navigate(`/events?filter=${encodeURIComponent(JSON.stringify(newFilter))}`);
@@ -66,16 +67,25 @@ const EventListActions = () => {
 
   return (
     <TopToolbar>
-      <CreateButton />
-      <ExportButton />
-      <Button onClick={handleToggleView}>
-        {isCanceledView ? 'Voir événements publiés' : 'Voir événements annulés'}
+    <CreateButton />
+    <ExportButton />
+    <Tooltip title={isCanceledView ? "Publiés" : "Annulés"}>
+      <Button
+        onClick={handleToggleView}
+        variant="outlined"
+        startIcon={isCanceledView ? <Visibility /> : <VisibilityOff />}
+        sx={{
+          textTransform: 'none',
+          color: 'primary.main', 
+        }}
+      >
+        {isCanceledView ? 'PUBLIES' : 'ANNULES'}
       </Button>
-    </TopToolbar>
+    </Tooltip>
+  </TopToolbar>
+  
   );
 };
-
-
 
 export const EventList: React.FC = () => {
 
@@ -85,8 +95,8 @@ export const EventList: React.FC = () => {
   const currentStatus = currentFilter.status || 'PUBLISHED';
   return (
     <List resource="events"  actions={<EventListActions />}
-    filter={{ status: currentStatus }} // Applique le bon filtre
-    pagination={false} sx={{ marginTop: '22px' }}>
+    filter={{ status: currentStatus }}
+    pagination={false} sx={{ marginTop: '40px' }}>
       <Datagrid 
         rowClick="show" 
         sx={{

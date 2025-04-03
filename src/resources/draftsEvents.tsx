@@ -4,7 +4,6 @@ import { List, Datagrid, TextField, EditButton, DeleteButton, ArrayField, Number
 export const DraftEventList: React.FC = () => (
   <List resource="events/draft" filter={{ status: 'DRAFT' }} sx={{ marginTop: '22px' }}>
     <Datagrid
-      rowClick="show"
       sx={{
         '& .MuiTableRow-root': {
           transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',

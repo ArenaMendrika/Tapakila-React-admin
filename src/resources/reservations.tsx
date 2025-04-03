@@ -2,7 +2,7 @@ import React from 'react';
 import { List, Datagrid, TextField, ReferenceField, BooleanField, DeleteButton, DateField } from 'react-admin';
 
 export const ReservationList: React.FC = () => (
-  <List sx={{ marginTop: '22px' }}>
+  <List sx={{ marginTop: '40px' }}>
     <Datagrid 
       rowClick="show" 
       sx={{

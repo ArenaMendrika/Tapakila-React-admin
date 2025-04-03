@@ -2,7 +2,7 @@ import React from 'react';
 import { List, Datagrid, TextField, EmailField, EditButton, DeleteButton, Edit, SimpleForm, TextInput, SelectInput, Create, PasswordInput } from 'react-admin';
 
 export const UserList: React.FC = () => (
-  <List resource="users" sx={{ marginTop: '22px' }}>
+  <List resource="users" sx={{ marginTop: '40px' }}>
     <Datagrid 
       rowClick="show" 
       sx={{
