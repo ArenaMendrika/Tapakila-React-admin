@@ -77,7 +77,23 @@ export const EventList: React.FC = () => {
         
         <TextField source="category" label="Catégorie" sx={{ fontFamily: '"Poppins", "Roboto", "Arial", sans-serif'}} />
         <TextField source="title" label="Titre" sx={{fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',}} />
-        <TextField source="startDateTime" label="Date & Heure" sx={{fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',}} />
+        <DateField
+  source="startDateTime"
+  label="Date & Heure"
+  showTime
+  locales="fr-FR"
+  options={{
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }}
+  sx={{
+    fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',
+  }}
+/>
+
         <TextField source="location" label="Lieu" sx={{fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',}}/>
         <TextField source="organizer" label="Organisateur" sx={{fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',}}/>
         <TextField source="status" label="Statut" sx={{fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',}}/>

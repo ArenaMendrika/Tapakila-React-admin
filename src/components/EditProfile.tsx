@@ -68,7 +68,7 @@ const EditProfile: React.FC = () => {
       </Button>
       {editUsername && !loading && (
         <Button variant="contained" color="secondary" onClick={handleUpdateUsername} sx={{
-          width: "20%",
+          width: "30%",
           padding: "10px",
           fontSize: "14px",
           fontWeight: "600",
