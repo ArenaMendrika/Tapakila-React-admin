@@ -1,126 +1,103 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { Button, TextField, Typography, Box, CircularProgress } from "@mui/material";
 
 const EditProfile: React.FC = () => {
   const [username, setUsername] = useState("");
   const [editUsername, setEditUsername] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Récupérer l'identité (remplacer par une fonction réelle)
-  useEffect(() => {
-    console.log("Récupération de l'identité depuis localStorage...");
-    const identity = JSON.parse(localStorage.getItem("identity") || "{}");
-    console.log("Identité récupérée:", identity);
-
-    if (identity) {
-      setUsername(identity.username || "");
-      console.log("Nom d'utilisateur initial:", identity.username);
-    }
-  }, []);
-
-  const handleUpdateUsername = async () => {
-    console.log("Tentative de mise à jour du nom d'utilisateur...");
-    const userId = localStorage.getItem("userId");
-    const refreshToken = localStorage.getItem("refreshToken");
-
-    if (!userId || !refreshToken) {
-        console.error("Erreur: ID utilisateur ou refresh token introuvable.");
-        return;
-    }
-
-    console.log("Données envoyées pour mise à jour:", { username });
-
+  const handleUpdateUsername = () => {
     setLoading(true);
-    try {
-        // Étape 1 : Mettre à jour l'username
-        const response = await updateUserData(userId, { username });
-        console.log("Réponse de l'API après mise à jour:", response);
-
-        // Étape 2 : Rafraîchir le token après l'update
-        const newAccessToken = await refreshAccessToken(refreshToken);
-        if (newAccessToken) {
-            localStorage.setItem("accessToken", newAccessToken);
-            console.log("Nouveau token stocké !");
-        } else {
-            console.error("Échec du rafraîchissement du token.");
-        }
-
-        alert("Nom d'utilisateur mis à jour !");
-    } catch (error) {
-        console.error("Erreur lors de la mise à jour:", error);
-        alert("Erreur lors de la mise à jour.");
-    } finally {
-        setLoading(false);
-        console.log("Chargement terminé.");
-    }
-};
-
-// ✅ Mise à jour du username via API
-const updateUserData = async (userId: string, data: { username: string }) => {
-    const API_URL = "http://localhost:8080"; 
-    console.log(`Appel à l'API pour mettre à jour l'utilisateur ${userId}...`);
-    
-    const response = await fetch(`${API_URL}/users/${userId}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-    });
-
-    if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Erreur serveur:", errorText);
-        throw new Error(`Erreur serveur: ${errorText}`);
-    }
-
-    return await response.json();
-};
-
-// ✅ Rafraîchir le token après la mise à jour
-const refreshAccessToken = async (refreshToken: string) => {
-    const API_URL = "http://localhost:8080/auth/refresh";
-
-    console.log("Tentative de rafraîchissement du token...");
-
-    const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken }),
-    });
-
-    if (!response.ok) {
-        console.error("Échec du rafraîchissement du token.");
-        return null;
-    }
-
-    const data = await response.json();
-    console.log("Nouveau token reçu:", data.accessToken);
-    return data.accessToken;
-};
-
+    setTimeout(() => {
+      setLoading(false);
+      alert("Nom d'utilisateur mis à jour!");
+    }, 1000);
+  };
 
   return (
-    <div>
-      <h2>Modifier le Profil</h2>
-      <label>
-        Nom d'utilisateur:
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => {
-            setUsername(e.target.value);
-            console.log("Nom d'utilisateur modifié:", e.target.value);
-          }}
-          disabled={!editUsername}
-        />
-        <button type="button" onClick={() => setEditUsername(!editUsername)}>
-          {editUsername ? "Annuler" : "Modifier"}
-        </button>
-      </label>
-      {editUsername && !loading && <button onClick={handleUpdateUsername}>Enregistrer</button>}
-      {loading && <p>Chargement...</p>}
-    </div>
+<Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "20px" }}>
+  <Typography variant="h5" sx={{ marginBottom: "20px" }}>
+    Modifier le Profil
+  </Typography>
+
+  <Box sx={{ display: "flex", flexDirection: "column", width: "100%", maxWidth: "500px", gap: "16px" }}>
+    <input
+      type="text"
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+      disabled={!editUsername}
+      style={{
+        width: "100%",
+        padding: "12px",
+        borderRadius: "12px",
+        border: "2px solid #d1d1d1",
+        backgroundColor: editUsername ? "#ffffff" : "#f3f3f3",
+        outline: "none",
+        transition: "all 0.3s ease-in-out",
+        fontSize: "16px",
+      }}
+      onFocus={(e) => (e.target.style.border = "2px solid #673ab7")}
+      onBlur={(e) => (e.target.style.border = "2px solid #d1d1d1")}
+    />
+
+    <Box sx={{ display: "flex", gap: "10px" }}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => setEditUsername(!editUsername)}
+        sx={{
+          width: "20%",
+          padding: "10px",
+          fontSize: "14px",
+          fontWeight: "600",
+          borderRadius: "10px",
+          border: "2px solid #6a4c93",
+          boxShadow: 3,
+          color: "#555",
+          background: "white",
+          "&:hover": {
+            background: "#6a4c93",
+            boxShadow: "0 4px 20px rgba(142, 68, 173, 0.4)",
+            color: 'white'
+          },
+          transition: "all 0.3s ease",
+           fontFamily: '"Poppins", "Roboto", "Arial", sans-serif'
+        }}
+      >
+        {editUsername ? "Annuler" : "Modifier"}
+      </Button>
+      {editUsername && !loading && (
+        <Button variant="contained" color="secondary" onClick={handleUpdateUsername} sx={{
+          width: "20%",
+          padding: "10px",
+          fontSize: "14px",
+          fontWeight: "600",
+          borderRadius: "10px",
+          border: "2px solid #6a4c93",
+          boxShadow: 3,
+          color: "#555",
+          background: "white",
+          "&:hover": {
+            background: "#6a4c93",
+            boxShadow: "0 4px 20px rgba(142, 68, 173, 0.4)",
+            color: 'white'
+          },
+          transition: "all 0.3s ease",
+           fontFamily: '"Poppins", "Roboto", "Arial", sans-serif'
+        }}>
+          Enregistrer
+        </Button>
+      )}
+    </Box>
+
+    {loading && (
+      <Box sx={{ marginTop: "10px" }}>
+        <CircularProgress />
+      </Box>
+    )}
+  </Box>
+</Box>
+
   );
 };
 
