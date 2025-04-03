@@ -43,7 +43,7 @@ const ChangePassword: React.FC = () => {
       {success && <Typography color="success">{success}</Typography>}
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-        <label style={{  fontSize: "14px", color: "#333" , fontFamily: '"Poppins", "Roboto", "Arial", sans-serif'}}>
+        <label style={{ color: "#333" , fontFamily: '"Poppins", "Roboto", "Arial", sans-serif', fontSize: '1.1rem'}}>
           Ancien mot de passe
         </label>
         <input
@@ -65,7 +65,7 @@ const ChangePassword: React.FC = () => {
           onBlur={(e) => (e.target.style.border = "2px solid #d1d1d1")}
         />
 
-        <label style={{fontSize: "14px", color: "#333", fontFamily: '"Poppins", "Roboto", "Arial", sans-serif' }}>
+        <label style={ {color: "#333", fontFamily: '"Poppins", "Roboto", "Arial", sans-serif', fontSize: '1.1rem' }}>
           Nouveau mot de passe
         </label>
         <input
@@ -87,7 +87,7 @@ const ChangePassword: React.FC = () => {
           onBlur={(e) => (e.target.style.border = "2px solid #d1d1d1")}
         />
 
-        <label style={{fontSize: "14px", color: "#333" , fontFamily: '"Poppins", "Roboto", "Arial", sans-serif'}}>
+        <label style={{ color: "#333" , fontFamily: '"Poppins", "Roboto", "Arial", sans-serif', fontSize: '1.1rem'}}>
           Confirmer le nouveau mot de passe
         </label>
         <input

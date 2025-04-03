@@ -16,7 +16,7 @@ const EditProfile: React.FC = () => {
 
   return (
 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "20px" }}>
-  <Typography variant="h5" sx={{ marginBottom: "20px" }}>
+  <Typography  sx={{ marginBottom: "20px" , fontFamily: '"Poppins", "Roboto", "Arial", sans-serif', fontSize: '1.1rem'}}>
     Modifier le Profil
   </Typography>
 
