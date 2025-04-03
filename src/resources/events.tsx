@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Accept } from 'react-dropzone';
 import { useEffect, useRef } from 'react';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { 
   SaveButton, 
   Toolbar, 
@@ -95,21 +96,21 @@ const CustomToolbar = () => {
   const notify = useNotify();
   const dataProvider = useDataProvider();
 
-  const handleSave = async (status: 'PUBLISHED' | 'DRAFT') => {
+  const handleSave = async (status: 'PUBLISHED' | 'DRAFT' | 'CANCELED') => {
     setValue('status', status);
     const isDraft = status === 'DRAFT';
-  
+
     const formData = getValues();
 
-    if (!isDraft) {
+    if (!isDraft && status !== 'CANCELED') {
         const requiredFields = ['title', 'description', 'category', 'startDateTime', 'location', 'organizer'];
         const missingFields = requiredFields.filter(field => !formData[field]);
-    
+
         if (missingFields.length > 0) {
             notify(`Champs obligatoires manquants: ${missingFields.join(', ')}`, { type: 'warning' });
-            return; 
+            return;
         }
-    
+
         if (!formData.tickets || formData.tickets.length === 0) {
             notify("Ajoutez au moins un billet avant de publier", { type: 'warning' });
             return;
@@ -118,24 +119,37 @@ const CustomToolbar = () => {
 
     handleSubmit(async (data) => {
         try {
-            await dataProvider.create('events', { data });
-            notify(`Événement ${isDraft ? 'enregistré en brouillon' : 'publié'} avec succès`, { type: 'success' });
+            if (status === 'CANCELED') {
+                await dataProvider.update('events', {
+                    id: data.id,
+                    data: { status: 'CANCELED' },
+                    previousData: data, // Ajout de previousData pour éviter l'erreur
+                });
+                notify("Événement annulé avec succès", { type: 'success' });
+            } else {
+                await dataProvider.create('events', { data });
+                notify(`Événement ${isDraft ? 'enregistré en brouillon' : 'publié'} avec succès`, { type: 'success' });
+            }
             redirect('list', 'events');
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : "Une erreur inconnue s'est produite";
-          notify(`Erreur lors de l'enregistrement : ${errorMessage}`, { type: 'error' });
-        }        
-    })();  
-  };
+            const errorMessage = error instanceof Error ? error.message : "Une erreur inconnue s'est produite";
+            notify(`Erreur lors de l'enregistrement : ${errorMessage}`, { type: 'error' });
+        }
+    })();
+};
 
-  return (
+return (
     <Toolbar>
-      <SaveButton label="Save" onClick={() => handleSave('PUBLISHED')} />
-      <Button onClick={() => handleSave('DRAFT')} variant="contained" startIcon={<DraftsIcon />}>
-        Draft
-      </Button>
+        <SaveButton label="Save" onClick={() => handleSave('PUBLISHED')} />
+        <Button onClick={() => handleSave('DRAFT')} variant="contained" startIcon={<DraftsIcon />}>
+            Draft
+        </Button>
+        <Button onClick={() => handleSave('CANCELED')} variant="contained" color="error">
+            Annuler
+        </Button>
     </Toolbar>
-  );
+);
+
 };
 
 export const EventCreate = () => {
@@ -182,7 +196,6 @@ export const EventCreate = () => {
   );
 };
 
-// 🔹 Formulaire d'édition
 export const EventEdit: React.FC = () => (
   <Edit>
     <SimpleForm toolbar={<CustomToolbar />}>

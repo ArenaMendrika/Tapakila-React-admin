@@ -12,7 +12,7 @@ interface EventData {
   location?: string;
   organizer?: string;
   tickets?: any[];
-  status?: 'PUBLISHED' | 'DRAFT';
+  status?: 'PUBLISHED' | 'DRAFT' | 'CANCELED';
   file?: { rawFile: File };
 }
 
@@ -42,95 +42,108 @@ const dataProvider: DataProvider = {
 
   create: async (resource, params) => {
     if (resource === 'events') {
-      const eventData: EventData = { ...params.data, status: params.data.status || 'PUBLISHED' };
-      const isDraft = eventData.status === 'DRAFT';
-      const formData = new FormData();
-      delete eventData.file;
-      
-      formData.append('event', new Blob([JSON.stringify(eventData)], { type: 'application/json' }));
-      
-      if (!isDraft) {
-        const requiredFields: (keyof EventData)[] = ['title', 'description', 'category', 'startDateTime', 'location', 'organizer'];
-        const missingFields = requiredFields.filter(field => !eventData[field]);
-        
-        if (missingFields.length > 0) {
-          throw new Error(`Champs obligatoires manquants: ${missingFields.join(', ')}`);
-        }
-        
-        if (!eventData.tickets || eventData.tickets.length === 0) {
-          throw new Error("Ajoutez au moins un billet avant de publier.");
-        }
-      }
-      
-      if (params.data.file?.rawFile) {
-        formData.append('file', params.data.file.rawFile);
-      }
-      
-      const response = await fetch(`${API_URL}/events`, {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Erreur serveur: ${errorText}`);
-      }
-      
-      const json = await response.json();
-      return { data: json };
-    }
-    
-    return httpClient(`${API_URL}/${resource}`, {
-      method: 'POST',
-      body: JSON.stringify(params.data),
-    }).then(({ json }) => ({ data: json }));
-  },
+        const eventData: EventData = { ...params.data, status: params.data.status || 'PUBLISHED' };
+        const isDraft = eventData.status === 'DRAFT';
+        const formData = new FormData();
 
-  update: async (resource, params) => {
-    if (resource === 'users' && params.data.newPassword) {
-      return httpClient(`${API_URL}/users/${params.id}/password`, {
-        method: 'PUT',
+        if (params.data.file) {
+            formData.append('file', params.data.file.rawFile);
+        }
+        delete eventData.file;
+
+        formData.append('event', new Blob([JSON.stringify(eventData)], { type: 'application/json' }));
+
+        // Validation des champs
+        if (!isDraft) {
+            const requiredFields: (keyof EventData)[] = ['title', 'description', 'category', 'startDateTime', 'location', 'organizer'];
+            const missingFields = requiredFields.filter(field => eventData[field] == null);
+
+            if (missingFields.length > 0) {
+                throw new Error(`Champs obligatoires manquants: ${missingFields.join(', ')}`);
+            }
+
+            if (!eventData.tickets || eventData.tickets.length === 0) {
+                throw new Error("Ajoutez au moins un billet avant de publier.");
+            }
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/events`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Erreur serveur: ${errorText}`);
+            }
+
+            const json = await response.json();
+            return { data: json };
+        } catch (error) {
+            console.error("Erreur lors de la création de l'événement:", error);
+            throw error;
+        }
+    }
+
+    return httpClient(`${API_URL}/${resource}`, {
+        method: 'POST',
         body: JSON.stringify(params.data),
-      }).then(({ json }) => ({ data: json }));
+    }).then(({ json }) => ({ data: json }));
+},
+
+update: async (resource, params) => {
+    if (resource === 'users' && params.data.newPassword) {
+        return httpClient(`${API_URL}/users/${params.id}/password`, {
+            method: 'PUT',
+            body: JSON.stringify(params.data),
+        }).then(({ json }) => ({ data: json }));
     }
 
     if (resource === 'users') {
-      return httpClient(`${API_URL}/users/${params.id}`, {
+        return httpClient(`${API_URL}/users/${params.id}`, {
+            method: 'PUT',
+            body: JSON.stringify(params.data),
+        }).then(({ json }) => ({ data: json }));
+    }
+
+    if (resource === 'events') {
+        const eventData: EventData = { ...params.data };
+        const formData = new FormData();
+
+        // Vérification avant suppression
+        if (params.data.file) {
+            formData.append('file', params.data.file.rawFile);
+        }
+        delete eventData.file;
+
+        formData.append('event', new Blob([JSON.stringify(eventData)], { type: 'application/json' }));
+
+        try {
+            const response = await fetch(`${API_URL}/events/${params.id}`, {
+                method: 'PUT',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Erreur serveur: ${errorText}`);
+            }
+
+            const json = await response.json();
+            return { data: json };
+        } catch (error) {
+            console.error("Erreur lors de la mise à jour de l'événement:", error);
+            throw error;
+        }
+    }
+
+    return httpClient(`${API_URL}/${resource}/${params.id}`, {
         method: 'PUT',
         body: JSON.stringify(params.data),
-      }).then(({ json }) => ({ data: json }));
-    }    
-    
-    if (resource === 'events') {
-      const eventData: EventData = { ...params.data };
-      const formData = new FormData();
-      delete eventData.file;
-      
-      formData.append('event', new Blob([JSON.stringify(eventData)], { type: 'application/json' }));
-      
-      if (params.data.file?.rawFile) {
-        formData.append('file', params.data.file.rawFile);
-      }
-      
-      const response = await fetch(`${API_URL}/events/${params.data.id}`, {
-        method: 'PUT',
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Erreur serveur: ${errorText}`);
-      }
-      
-      const json = await response.json();
-      return { data: json };
-    }
-    
-    return httpClient(`${API_URL}/${resource}/${params.id}`, {
-      method: 'PUT',
-      body: JSON.stringify(params.data),
     }).then(({ json }) => ({ data: json }));
-  },
+},
+
 
   delete: async (resource, params) => {
     const { json } = await httpClient(`${API_URL}/${resource}/${params.id}`);
