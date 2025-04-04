@@ -34,7 +34,6 @@ export const UserList: React.FC = () => (
       <EmailField source="email" label="Email" sx={{ fontFamily: '"Poppins", "Roboto", "Arial", sans-serif' }} />
       <TextField source="role" label="Rôle" sx={{ fontFamily: '"Poppins", "Roboto", "Arial", sans-serif' }} />
       <EditButton />
-      <DeleteButton />
     </Datagrid>
   </List>
 );
